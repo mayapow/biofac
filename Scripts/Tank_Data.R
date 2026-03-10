@@ -16,39 +16,41 @@ td <- read.csv(here("Data/tank_data_biofac.csv"))
 td <- td %>%
   mutate(date_time = paste(date,pH_time)) %>%
   mutate(date_time = mdy_hm(date_time)) %>%
-  mutate(tank = as.factor(tank)) %>% 
-  dplyr::filter(treatment != "acclimation")
+  mutate(tank = as.factor(tank)) #%>% 
+  #dplyr::filter(treatment != "acclimation")
 
 #plot data
 
-temp <- ggplot(td, aes(x = date_time, y = temp, color = treatment, group = tank)) +
+temp <- ggplot(td, aes(x = date_time, y = temp, color = treatment, group = tank, shape = coral_no)) +
   geom_point() +
   geom_line() +
   theme_bw(base_size = 20) +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_x_datetime(date_labels = "%D %H")
 
-pH <- ggplot(td, aes(x = date_time, y = pH, color = treatment, group = tank)) +
+pH <- ggplot(td, aes(x = date_time, y = pH, color = treatment, group = tank, shape = coral_no)) +
   geom_point() +
   geom_line() +
   theme_bw(base_size = 20) +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_x_datetime(date_labels = "%D %H")
 
-DO <- ggplot(td, aes(x = date_time, y = DO, color = treatment, group = tank)) +
+DO <- ggplot(td, aes(x = date_time, y = DO, color = treatment, group = tank, shape = coral_no)) +
   geom_point() +
   geom_line() +
   theme_bw(base_size = 20) +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_x_datetime(date_labels = "%D %H")
 
-# sal <- ggplot(td, aes(x = date_time, y = sal, color = as.factor(tank), shape = coral_no)) +
-#   geom_point() +
-#   theme_bw(base_size = 20) +
-#   theme(axis.text.x = element_text(angle = 90))
+sal <- ggplot(td, aes(x = date_time, y = sal, color = treatment, group = tank, shape = coral_no)) +
+  geom_point() +
+  geom_line() +
+  theme_bw(base_size = 20) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_x_datetime(date_labels = "%D %H")
   
 
-tank_plots <- ggarrange(temp, pH, DO, common.legend = T, nrow = 2, ncol = 2)
+tank_plots <- ggarrange(temp, pH, DO, sal, common.legend = T, nrow = 2, ncol = 2)
 tank_plots
 
 ggsave(here("Output/tank_plots.pdf"), tank_plots, h = 10, w = 10)
