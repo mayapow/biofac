@@ -19,7 +19,7 @@ td <- td %>%
   mutate(tank = as.factor(tank)) #%>% 
   #dplyr::filter(treatment != "acclimation")
 
-#plot data
+#plot ALL data
 
 temp <- ggplot(td, aes(x = date_time, y = temp, color = treatment, group = tank, shape = coral_no)) +
   geom_point() +
@@ -54,6 +54,36 @@ tank_plots <- ggarrange(temp, pH, DO, sal, common.legend = T, nrow = 2, ncol = 2
 tank_plots
 
 ggsave(here("Output/tank_plots.pdf"), tank_plots, h = 10, w = 10)
+
+ed <- td %>%
+  dplyr::filter(treatment != "acclimation")
+
+temp <- ggplot(ed, aes(x = date_time, y = temp, color = treatment, group = tank, shape = coral_no)) +
+  geom_point() +
+  geom_line() +
+  theme_bw(base_size = 20) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_x_datetime(date_labels = "%D %H")
+
+pH <- ggplot(ed, aes(x = date_time, y = pH, color = treatment, group = tank, shape = coral_no)) +
+  geom_point() +
+  geom_line() +
+  theme_bw(base_size = 20) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_x_datetime(date_labels = "%D %H")
+
+DO <- ggplot(ed, aes(x = date_time, y = DO, color = treatment, group = tank, shape = coral_no)) +
+  geom_point() +
+  geom_line() +
+  theme_bw(base_size = 20) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_x_datetime(date_labels = "%D %H")
+
+
+expt_plots <- ggarrange(temp, pH, DO, common.legend = T, nrow = 2, ncol = 2)
+expt_plots
+
+ggsave(here("Output/experimental_plots.pdf"), expt_plots, h = 10, w = 10)
 
 #sunset at 18:38 so during sampling on 3/6
 #flow rates all over the place so residence times super unpredictable and weird
