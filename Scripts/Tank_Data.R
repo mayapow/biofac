@@ -18,6 +18,7 @@ td <- td %>%
   mutate(date_time = paste(date,time)) %>%
   mutate(date_time = mdy_hm(date_time)) %>%
   mutate(tank = as.factor(tank)) %>% 
+  filter(bad == "no") %>%
   drop_na(temp)
 
 #plot ALL data
@@ -43,21 +44,21 @@ DO <- ggplot(td, aes(x = date_time, y = DO, color = treatment, group = tank, sha
   theme(axis.text.x = element_text(angle = 90)) +
   scale_x_datetime()
 
-sal <- ggplot(td, aes(x = date_time, y = sal, color = treatment, group = tank, shape = coral_no)) +
-  geom_point() +
-  geom_line() +
-  theme_bw(base_size = 20) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_x_datetime()
-  
+# sal <- ggplot(td, aes(x = date_time, y = sal, color = treatment, group = tank, shape = coral_no)) +
+#   geom_point() +
+#   geom_line() +
+#   theme_bw(base_size = 20) +
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_x_datetime()
 
-tank_plots <- ggarrange(temp, pH, DO, sal, common.legend = T, nrow = 2, ncol = 2)
+
+tank_plots <- ggarrange(temp, pH, DO, common.legend = T, nrow = 2, ncol = 2)
 tank_plots
 
 ggsave(here("Output/tank_plots.pdf"), tank_plots, h = 10, w = 10)
 
 ed <- td %>%
-  dplyr::filter(treatment != "acclimation")
+  dplyr::filter(period != "acclimation")
 
 temp <- ggplot(ed, aes(x = date_time, y = temp, color = treatment, group = tank)) +
   geom_point() +
@@ -80,22 +81,21 @@ DO <- ggplot(ed, aes(x = date_time, y = DO, color = treatment, group = tank)) +
   theme(axis.text.x = element_text(angle = 90))+
   scale_x_datetime()
 
-sal <- ggplot(ed, aes(x = date_time, y = sal, color = treatment, group = tank, shape = coral_no)) +
-  geom_point() +
-  geom_line() +
-  theme_bw(base_size = 20) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_x_datetime()
+# sal <- ggplot(ed, aes(x = date_time, y = sal, color = treatment, group = tank, shape = coral_no)) +
+#   geom_point() +
+#   geom_line() +
+#   theme_bw(base_size = 20) +
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_x_datetime()
 
-expt_plots <- ggarrange(temp, pH, DO, sal, common.legend = T, nrow = 2, ncol = 2)
+expt_plots <- ggarrange(temp, pH, DO, common.legend = T, nrow = 2, ncol = 2)
 expt_plots
 
 ggsave(here("Output/experimental_plots.pdf"), expt_plots, h = 10, w = 10)
 
 se <- function(x) sd(x)/sqrt(length(x))
 
-sumd <- td %>%
-  dplyr::filter(treatment != "acclimation") %>% 
+sumd <- ed %>%
   mutate(timepoint = mdy_hm(timepoint)) %>%
   drop_na(temp) %>%
   group_by(timepoint, treatment) %>%
@@ -133,13 +133,16 @@ DO_sum <- ggplot(sumd, aes(x = timepoint, y = mean_DO, color = treatment)) +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_x_datetime()
 
-sal_sum <- ggplot(sumd, aes(x = timepoint, y = mean_sal, color = treatment)) +
-  geom_point() +
-  geom_line() +
-  geom_errorbar(aes(ymin=mean_sal+se_sal, ymax= mean_sal-se_sal))+
-  theme_bw(base_size = 20) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_x_datetime()
+# sal_sum <- ggplot(sumd, aes(x = timepoint, y = mean_sal, color = treatment)) +
+#   geom_point() +
+#   geom_line() +
+#   geom_errorbar(aes(ymin=mean_sal+se_sal, ymax= mean_sal-se_sal))+
+#   theme_bw(base_size = 20) +
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_x_datetime()
 
-sum_plots <- ggarrange(temp_sum, pH_sum, DO_sum, sal_sum, common.legend = T, nrow = 2, ncol = 2)
+sum_plots <- ggarrange(temp_sum, pH_sum, DO_sum, common.legend = T, nrow = 2, ncol = 2)
 sum_plots
+
+ggsave(here("Output/mean_treatment_plots.pdf"), sum_plots, h = 10, w = 10)
+
