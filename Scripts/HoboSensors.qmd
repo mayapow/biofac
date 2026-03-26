@@ -1,0 +1,104 @@
+---
+title: "HOBOSensors"
+author: html
+editor: visual
+---
+
+#Load Libraries
+
+```{r}
+library(tidyverse)
+library(here)
+library(lubridate)
+```
+
+```{r}
+MiniDot1 <- read_csv(here("Data/Tank_Data/HOBOSensors/646496_MiniDot_Tank24.csv"))
+MiniDot2 <- read_csv(here("Data/Tank_Data/HOBOSensors/735729_MiniDot_Sump5.csv"))
+DO1 <- read_csv(here("Data/Tank_Data/HOBOSensors/22482990_DO_CTD_SUMP5.csv"))
+DO2 <- read_csv(here("Data/Tank_Data/HOBOSensors/22482991_DO_CTD_Tank24.csv"))
+pH1 <- read_csv(here("Data/Tank_Data/HOBOSensors/22491060_pH_SUMP5.csv"))
+pH2 <- read_csv(here("Data/Tank_Data/HOBOSensors/22491061_pH_Tank24.csv"))
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+mutate(Date = lubridate::ymd(Date)) %\>% filter(between(Date, ymd("2025-08-01"), ymd("2025-08-15"))) %\>%
+
+```{r}
+MiniDotData <- full_join(MiniDot1, MiniDot2)
+DoCTDData <- full_join(DO2, DO1)
+
+DoData <- full_join(MiniDotData, DoCTDData, by = c("Instrument","Tank", "DateTime", "DO", "Temperature")) 
+  
+DoDataFilter <- DoData %>% mutate(DateTime = lubridate::mdy_hm(DateTime)) %>%
+  filter(between(DateTime,mdy_hm("03-17-2026 16:00"), mdy_hm("03-19_26 09:30")))
+
+
+pHData <- rbind(pH1, pH2) 
+phDataFilter <- pHData %>% mutate(DateTime = lubridate::mdy_hm(DateTime)) %>%
+  filter(between(DateTime,mdy_hm("03-17-2026 16:00"), mdy_hm("03-19_26 09:30")))
+
+
+
+```
+
+```{r}
+OrionData <- data.frame(DateTime = c(mdy_hm("03-18-2026 12:43","03-18-2026 20:29" , "03-18-2026 12:52","03-18-2026 20:39" )), 
+              DO =c(8.16, 6.57, 6.64, 6.4), 
+              Tank = c("Tank24", "Tank24", "Sump5", "Sump5")
+                        )
+
+pHOrionData <- data.frame(DateTime = c(mdy_hm("03-18-2026 12:43","03-18-2026 20:29" , "03-18-2026 12:52","03-18-2026 20:39" )), 
+                          pH = c(8.16, 8.09, 8.11, 8.07), 
+                          Millivolts = c(-66.6, -61.9, -62.9, -60.6), 
+                          Tank = c("Tank24", "Tank24", "Sump5", "Sump5"))
+```
+
+```{r}
+p1<- ggplot(DoDataFilter, aes(DateTime, DO, group_by = "Instrument", color = Instrument)) +
+  geom_point() +
+  facet_wrap(~Tank) 
+   # annotate( "point",
+   #         x = mdy_hm("03-18-2026 12:43"), 
+   #         y = 7.01, 
+   #         size =8,
+   #         color = "blue") +
+   # annotate( "point",
+   #         x = mdy_hm("03-18-2026 20:29"), 
+   #         y = 6.57, 
+   #         size =8,
+   #         color = "blue")
+  
+DOPlot <- p1 +
+  geom_point(data =OrionData, color = "blue", size =7)
+
+ggsave(here("Output","DOPlot.png"), 
+            width =9, height =6)
+```
+
+```{r}
+ p2 <- ggplot(phDataFilter, aes(DateTime, pH, group_by = "Instrument", color = Instrument)) +
+  geom_point() +
+  facet_wrap(~Tank) 
+ 
+ pHPlot <- p2 +  
+  geom_point(data =pHOrionData, color = "blue", size =2)
+ 
+ ggsave(here("Output","pHPlot.png"), 
+            width =9, height =6)
+```
+
+```{r}
+ p3 <- ggplot(phDataFilter, aes(DateTime, Millivolts, group_by = "Instrument", color = Instrument)) +
+  geom_point() +
+  facet_wrap(~Tank) 
+   
+    MillivoltPlot <- p3 + geom_point(data =pHOrionData, color = "blue", size =2)
+    
+    ggsave(here("Output","MillivoltPlot.png"), 
+            width =9, height =6)
+    
+    
+
+```
