@@ -102,3 +102,11 @@ ggsave(here("Output","DOPlot.png"),
     
 
 ```
+
+```{r}
+
+ ggplot(DoCTDData, aes(DateTime, Salinity, group_by = "Instrument", color = Instrument)) +
+  geom_point() 
+
+
+```
