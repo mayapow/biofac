@@ -37,6 +37,7 @@ library(viridis)
 library(car)
 library(future)
 library(furrr)
+library(dplyr)
 
 ############# now it's time to code ############
 ################################################
@@ -102,12 +103,12 @@ RespoR <- tibble(.rows =length(filenames_final)*n_light_levels,
 for(i in 1:length(filenames_final)) {
   FRow <- as.numeric(which(Sample_Info$FileID_csv==filenames_final[i])) # stringsplit this renames our file
  
-   Respo.Data1 <- read_csv(skip=1,file.path(path.p, paste0(file.names.full[i]))) %>% # reads in each file in list
+   Respo.Data1 <- read.csv(skip=1,file.path(path.p, paste0(file.names.full[i]))) %>% # reads in each file in list
     dplyr::select(Date, Time, Value, Temp) %>% # keep only what we need: Time stamp per 1sec, Raw O2 value per 1sec, in situ temp per 1sec
     unite(Date,Time,col="Time",remove=T, sep = " ") %>%
     drop_na() %>% 
-    mutate(Time = mdy_hms(Time)) %>% # convert time
-    mutate(help = i) ##if stuck in forloop with error from filter, can check RespoR and see at what row the forloop stopped working  
+    mutate(Time = mdy_hms(Time)) #%>% # convert time
+    #mutate(help = i) ##if stuck in forloop with error from filter, can check RespoR and see at what row the forloop stopped working  
 
   ## cut the data by start and stop times from metadata
   #Use start time of each light step from the metadata to separate data by light stop
@@ -183,14 +184,16 @@ for(i in 1:length(filenames_final)) {
  #  Plot regression diagnostics
  
   for(j in 1:length(df$Light_level)){
-   pdf(paste0(here("Output","PI"),"/",rename,"_",j,".pdf" ))
+   pdf(paste0(here("Output","VEST"),"/",rename,"_",j,".pdf" ))
     plot(df$regs[[j]])
-    dev.off() 
+    dev.off()
   }
- 
+  # pdf(paste0(here("Output","VEST"),"/",rename,".pdf"))
+  # plot(regs)
+  # dev.off() 
   
   df<-df %>%
-    select(Light_level,Temp.C, RegStats ) %>%
+    dplyr::select(Light_level,Temp.C, RegStats ) %>%
     unnest(RegStats) %>%
     mutate(sample_ID = rename) %>%
     left_join(Sample_Info[FRow,] %>%
