@@ -469,9 +469,12 @@ pH_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_pH_dif, color 
 DO_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_DO_dif, color = treatment)) +
   geom_point() +
   #geom_line() +
+  stat_summary(geom = "text", fun = max, vjust = -1, size = 8,
+               label = c("a", "ab", "b", "b", "a", "ab", "","","","","",""))+
   facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_DO_dif+se_DO_dif, ymax= mean_DO_dif-se_DO_dif), alpha = 0.5)+
   theme_bw(base_size = 20) +
+  ylim(0.1,0.6)+
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
@@ -594,6 +597,10 @@ DO_day_dif_emm <- emmeans::emmeans(DO_day_dif_mod, ~ treatment)
 DO_day_dif_pairs <- pairs(DO_day_dif_emm)
 DO_day_dif_pairs #MONOA and 3SP SIG HIGHER THAN FAKE A and FAKE B, 6SP ALMOST SIG HIGHER THAN FAKE A and FAKE B
 #MONO B ALMOST SIG LOWER THAN MONOA
+# 3SP - FAKEA    0.15048 0.0476 323   3.162  0.0211
+# 3SP - FAKEB    0.15643 0.0465 323   3.367  0.0109
+# FAKEA - MONOA -0.17319 0.0478 323  -3.623  0.0045
+# FAKEB - MONOA -0.17914 0.0467 323  -3.838  0.0021
 
 #DO night comparisons
 DO_night_dif_mod <- lm(DO_dif~treatment, data = night_dif)
