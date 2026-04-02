@@ -44,7 +44,7 @@ library(furrr)
 
 #set the path to all of the raw oxygen datasheets
 ## these are saved onto the computer in whatever file path/naming scheme you saved things to 
-path.p<-here("Data","RespoFiles","PI","RawO2") #the location of all your respirometry files
+path.p<-here("Data","RespoFiles","VEST","RawO2") #the location of all your respirometry files
 #you can change to individual run folders if needed
 
 # bring in all of the individual files
@@ -54,20 +54,20 @@ filenames_final<-basename(list.files(path = path.p, pattern = "csv$", recursive 
 file.names.full<-list.files(path = path.p, pattern = "csv$", recursive = TRUE) 
 
 #empty chamber volume
-ch.vol <- 485 #mL #of small chambers 
+ch.vol <- 500 #mL #of small chambers 
 
 ######### Load and tidy files ###############
 ############################################
 #Load your respiration data file, with all the times, water volumes(mL), #not doing dry weight just SA
 #RespoMeta <- read_csv(here("Data","RespoFiles","Respo_Metadata_SGDDilutions_Cabral_Varari.csv"))
-BioData <- read_csv(here("Data","RespoFiles","PI","Fragment_Measurements_PI.csv"))
+BioData <- read_csv(here("Data","RespoFiles","VEST","Fragment_Measurements_Vest.csv"))
 
-RespoMeta <- read_csv(here("Data","RespoFiles","PI","PI_meta.csv"))
+RespoMeta <- read_csv(here("Data","RespoFiles","VEST","Vest_meta.csv"))
 #View(BioData)
 
 # join the data together
 Sample_Info <- left_join(RespoMeta, BioData)
-#View(Sample.Info)
+#View(Sample_Info)
 
 ##### Make sure times are consistent ####
 # make start and stop times real times, so that we can join the respo output and sample_info data frames
@@ -84,7 +84,7 @@ Sample_Info <- Sample_Info %>%
 #generate a 4 column dataframe with specific column names
 # data is in umol.L.sec
 
-n_light_levels<-8 # number of unique light levels
+n_light_levels<-1 # number of unique light levels
 
 RespoR <- tibble(.rows =length(filenames_final)*n_light_levels,
                  sample_ID = NA,
@@ -106,8 +106,8 @@ for(i in 1:length(filenames_final)) {
     dplyr::select(Date, Time, Value, Temp) %>% # keep only what we need: Time stamp per 1sec, Raw O2 value per 1sec, in situ temp per 1sec
     unite(Date,Time,col="Time",remove=T, sep = " ") %>%
     drop_na() %>% 
-    mutate(Time = mdy_hms(Time)) #%>% # convert time
-   #mutate(help = i) ##if stuck in forloop with error from filter, can check RespoR and see at what row the forloop stopped working  
+    mutate(Time = mdy_hms(Time)) %>% # convert time
+    mutate(help = i) ##if stuck in forloop with error from filter, can check RespoR and see at what row the forloop stopped working  
 
   ## cut the data by start and stop times from metadata
   #Use start time of each light step from the metadata to separate data by light stop
@@ -166,7 +166,7 @@ for(i in 1:length(filenames_final)) {
   
   # Map LoLinR function onto all intervals of each sample's thinned dataset
   df <- combined_oxy %>%
-    select(t_sec, Value, Light_level, Temp)%>%
+    dplyr::select(t_sec, Value, Light_level, Temp)%>%
     mutate(t_sec = as.numeric(t_sec))%>%
     nest_by(Light_level) %>%
     ungroup()%>%

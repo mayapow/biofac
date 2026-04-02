@@ -1,0 +1,13 @@
+sample_ID,weight_g,volume_mL,frag_ID,SA_cm2
+P1,1,500,P1,1
+P2,1,500,P2,1
+P3,NA,500,P3,1
+PBlank1,1,500,PBlank1,1
+P4,1,500,P4,1
+P5,1,500,P5,1
+P6,1,500,P6,1
+P7,1,500,P7,1
+P8,1,500,P8,1
+PBlank2,NA,500,PBlank2,1
+P9,1,500,P9,1
+P10,1,500,P10,1
