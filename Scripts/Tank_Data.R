@@ -196,57 +196,62 @@ day_night_sum <- td %>%
                    se_cond = se(cond),
                    .groups = "drop")
 
-temp_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_temp, color = treatment)) +
+temp_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_temp, color = treatment)) +
   geom_point(alpha = 0.5) +
   #geom_line() +
+  facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_temp+se_temp, ymax= mean_temp-se_temp), alpha = 0.5)+
   theme_bw(base_size = 20) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
-pH_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_pH, color = treatment)) +
+pH_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_pH, color = treatment)) +
   geom_point(alpha = 0.5) +
   #geom_line() +
+  facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_pH+se_pH, ymax= mean_pH-se_pH), alpha = 0.5)+
   theme_bw(base_size = 20) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
-mV_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_mV, color = treatment)) +
-  geom_point(alpha = 0.5) +
-  #geom_line() +
-  geom_errorbar(aes(ymin=mean_mV+se_mV, ymax= mean_mV-se_mV), alpha = 0.5)+
-  theme_bw(base_size = 20) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
-  theme(axis.text.x = element_text(angle = 90))
+# mV_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_mV, color = treatment)) +
+#   geom_point(alpha = 0.5) +
+#   #geom_line() +
+#   facet_wrap(.~day_night, nrow = 1) +
+#   geom_errorbar(aes(ymin=mean_mV+se_mV, ymax= mean_mV-se_mV), alpha = 0.5)+
+#   theme_bw(base_size = 20) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
+#   theme(axis.text.x = element_text(angle = 90))
 
-DO_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_DO, color = treatment)) +
+DO_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_DO, color = treatment)) +
   geom_point(alpha = 0.5) +
   #geom_line() +
+  facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_DO+se_DO, ymax= mean_DO-se_DO), alpha = 0.5)+
   theme_bw(base_size = 20) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
-sal_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_sal, color = treatment)) +
+sal_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_sal, color = treatment)) +
   geom_point(alpha = 0.5) +
   #geom_line() +
+  facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_sal+se_sal, ymax= mean_sal-se_sal), alpha = 0.5)+
   theme_bw(base_size = 20) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
-cond_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_cond, color = treatment)) +
-  geom_point(alpha = 0.5) +
-  #geom_line() +
-  geom_errorbar(aes(ymin=mean_cond+se_cond, ymax= mean_cond-se_cond), alpha = 0.5)+
-  theme_bw(base_size = 20) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
-  theme(axis.text.x = element_text(angle = 90))
+# cond_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_cond, color = treatment)) +
+#   geom_point(alpha = 0.5) +
+#   #geom_line() +
+#   geom_errorbar(aes(ymin=mean_cond+se_cond, ymax= mean_cond-se_cond), alpha = 0.5)+
+#   theme_bw(base_size = 20) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
+#   theme(axis.text.x = element_text(angle = 90))
 
 
-dnsum_plots <- ggarrange(temp_dnsum, pH_dnsum, mV_dnsum, DO_dnsum, sal_dnsum, cond_dnsum, 
-                       common.legend = T, nrow = 2, ncol = 3)
+dnsum_plots <- ggarrange(temp_dnsum, pH_dnsum, DO_dnsum, sal_dnsum, 
+                       common.legend = T, nrow = 2, ncol = 2)
 dnsum_plots
 
 ggsave(here("Output/mean_treatment_day_night_plots.pdf"), dnsum_plots, h = 10, w = 10)
@@ -285,14 +290,14 @@ pH_dif <- ggplot(ts, aes(x = date_time, y = pH_dif, color = treatment, group = t
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
-mV_dif <- ggplot(ts, aes(x = date_time, y = mV_dif, color = treatment, group = tank)) +
-  geom_point(alpha = 0.5) +
-  geom_line(alpha = 0.5) +
-  facet_wrap(day_night~., nrow = 2) +
-  theme_bw(base_size = 20) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
-  scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
+# mV_dif <- ggplot(ts, aes(x = date_time, y = mV_dif, color = treatment, group = tank)) +
+#   geom_point(alpha = 0.5) +
+#   geom_line(alpha = 0.5) +
+#   facet_wrap(day_night~., nrow = 2) +
+#   theme_bw(base_size = 20) +
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
+#   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
 DO_dif <- ggplot(ts, aes(x = date_time, y = DO_dif, color = treatment, group = tank)) +
   geom_point(alpha = 0.5) +
@@ -312,16 +317,16 @@ sal_dif <- ggplot(ts, aes(x = date_time, y = sal_dif, color = treatment, group =
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
-cond_dif <- ggplot(ts, aes(x = date_time, y = cond_dif, color = treatment, group = tank)) +
-  geom_point(alpha = 0.5) +
-  geom_line(alpha = 0.5) +
-  facet_wrap(day_night~., nrow = 2) +
-  theme_bw(base_size = 20) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
-  scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
+# cond_dif <- ggplot(ts, aes(x = date_time, y = cond_dif, color = treatment, group = tank)) +
+#   geom_point(alpha = 0.5) +
+#   geom_line(alpha = 0.5) +
+#   facet_wrap(day_night~., nrow = 2) +
+#   theme_bw(base_size = 20) +
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
+#   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
-dif_plots <- ggarrange(temp_dif, pH_dif, mV_dif, DO_dif, sal_dif, cond_dif, 
+dif_plots <- ggarrange(temp_dif, pH_dif, DO_dif, sal_dif, 
                        common.legend = T, nrow = 2, ncol = 3)
 dif_plots
 
@@ -435,57 +440,168 @@ day_night_sum <- ts %>%
                    se_cond_dif = se(cond_dif),
                    .groups = "drop")
 
-temp_dif_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_temp_dif, color = treatment)) +
-  geom_point(alpha = 0.5) +
+temp_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_temp_dif, color = treatment)) +
+  geom_point() +
   #geom_line() +
+  facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_temp_dif+se_temp_dif, ymax= mean_temp_dif-se_temp_dif), alpha = 0.5)+
   theme_bw(base_size = 20) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
-pH_dif_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_pH_dif, color = treatment)) +
-  geom_point(alpha = 0.5) +
+pH_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_pH_dif, color = treatment)) +
+  geom_point() +
   #geom_line() +
+  facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_pH_dif+se_pH_dif, ymax= mean_pH_dif-se_pH_dif), alpha = 0.5)+
   theme_bw(base_size = 20) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
-mV_dif_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_mV_dif, color = treatment)) +
-  geom_point(alpha = 0.5) +
-  #geom_line() +
-  geom_errorbar(aes(ymin=mean_mV_dif+se_mV_dif, ymax= mean_mV_dif-se_mV_dif), alpha = 0.5)+
-  theme_bw(base_size = 20) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
-  theme(axis.text.x = element_text(angle = 90))
+# mV_dif_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_mV_dif, color = treatment)) +
+#   geom_point(alpha = 0.5) +
+#   #geom_line() +
+#   geom_errorbar(aes(ymin=mean_mV_dif+se_mV_dif, ymax= mean_mV_dif-se_mV_dif), alpha = 0.5)+
+#   theme_bw(base_size = 20) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
+#   theme(axis.text.x = element_text(angle = 90))
 
-DO_dif_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_DO_dif, color = treatment)) +
-  geom_point(alpha = 0.5) +
+DO_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_DO_dif, color = treatment)) +
+  geom_point() +
   #geom_line() +
+  facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_DO_dif+se_DO_dif, ymax= mean_DO_dif-se_DO_dif), alpha = 0.5)+
   theme_bw(base_size = 20) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
-sal_dif_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_sal_dif, color = treatment)) +
-  geom_point(alpha = 0.5) +
+sal_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_sal_dif, color = treatment)) +
+  geom_point() +
   #geom_line() +
+  facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_sal_dif+se_sal_dif, ymax= mean_sal_dif-se_sal_dif), alpha = 0.5)+
   theme_bw(base_size = 20) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
-cond_dif_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_cond_dif, color = treatment)) +
-  geom_point(alpha = 0.5) +
-  #geom_line() +
-  geom_errorbar(aes(ymin=mean_cond_dif+se_cond_dif, ymax= mean_cond_dif-se_cond_dif), alpha = 0.5)+
-  theme_bw(base_size = 20) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
-  theme(axis.text.x = element_text(angle = 90))
+# cond_dif_dnsum <- ggplot(day_night_sum, aes(x = day_night, y = mean_cond_dif, color = treatment)) +
+#   geom_point(alpha = 0.5) +
+#   #geom_line() +
+#   geom_errorbar(aes(ymin=mean_cond_dif+se_cond_dif, ymax= mean_cond_dif-se_cond_dif), alpha = 0.5)+
+#   theme_bw(base_size = 20) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
+#   theme(axis.text.x = element_text(angle = 90))
 
-
-dnsum_dif_plots <- ggarrange(temp_dif_dnsum, pH_dif_dnsum, mV_dif_dnsum, DO_dif_dnsum, sal_dif_dnsum, cond_dif_dnsum, 
-                         common.legend = T, nrow = 2, ncol = 3)
+dnsum_dif_plots <- ggarrange(temp_dif_dnsum, pH_dif_dnsum, DO_dif_dnsum, sal_dif_dnsum, 
+                         common.legend = T, nrow = 2, ncol = 2)
 dnsum_dif_plots
 
 ggsave(here("Output/mean_dif_treatment_day_night_plots.pdf"), dnsum_dif_plots, h = 10, w = 10)
+
+####Stats
+
+#All data
+
+day <- td %>% 
+  filter(day_night == "day") %>%
+  drop_na(cond) %>%
+  filter(treatment != "sump")
+
+night <- td %>% 
+  filter(day_night == "night") %>%
+  drop_na(cond) %>%
+  filter(treatment != "sump")
+
+#pH day comparisons
+pH_day_mod <- lm(pH~treatment, data = day)
+Anova(pH_day_mod)
+summary(pH_day_mod)
+#check_model(DW.mod.spp)
+
+pH_day_emm <- emmeans::emmeans(pH_day_mod, ~ treatment)
+pH_day_pairs <- pairs(pH_day_emm)
+pH_day_pairs #NO DIFFERENCES
+
+#pH night comparisons
+pH_night_mod <- lm(pH~treatment, data = night)
+Anova(pH_night_mod)
+summary(pH_night_mod)
+#check_model(DW.mod.spp)
+
+pH_night_emm <- emmeans::emmeans(pH_night_mod, ~ treatment)
+pH_night_pairs <- pairs(pH_night_emm)
+pH_night_pairs #NO DIFFERENCES
+
+#DO day comparisons
+#pH day comparisons
+DO_day_mod <- lm(DO~treatment, data = day)
+Anova(DO_day_mod)
+summary(DO_day_mod)
+#check_model(DW.mod.spp)
+
+DO_day_emm <- emmeans::emmeans(DO_day_mod, ~ treatment)
+DO_day_pairs <- pairs(DO_day_emm)
+DO_day_pairs #NO DIFFERENCES
+
+#DO night comparisons
+DO_night_mod <- lm(DO~treatment, data = night)
+Anova(DO_night_mod)
+summary(DO_night_mod)
+#check_model(DW.mod.spp)
+
+DO_night_emm <- emmeans::emmeans(DO_night_mod, ~ treatment)
+DO_night_pairs <- pairs(DO_night_emm)
+DO_night_pairs #NO DIFFERENCES
+
+#Sump difference data
+#make dataframes for day and night of data from sump differences
+day_dif <- ts %>% 
+  filter(day_night == "day") %>%
+  drop_na(cond_dif)
+
+night_dif <- ts %>% 
+  filter(day_night == "night") %>%
+  drop_na(cond_dif)
+
+#pH day comparisons
+pH_day_dif_mod <- lm(pH_dif~treatment, data = day_dif)
+Anova(pH_day_dif_mod)
+summary(pH_day_dif_mod)
+#check_model(DW.mod.spp)
+
+pH_day_dif_emm <- emmeans::emmeans(pH_day_dif_mod, ~ treatment)
+pH_day_dif_pairs <- pairs(pH_day_dif_emm)
+pH_day_dif_pairs #NO DIFFERENCES
+
+#pH night comparisons
+pH_night_dif_mod <- lm(pH_dif~treatment, data = night_dif)
+Anova(pH_night_dif_mod)
+summary(pH_night_dif_mod)
+#check_model(DW.mod.spp)
+
+pH_night_dif_emm <- emmeans::emmeans(pH_night_dif_mod, ~ treatment)
+pH_night_dif_pairs <- pairs(pH_night_dif_emm)
+pH_night_dif_pairs #FAKE B almost sig lower than MONOA and 6SP
+
+#DO day comparisons
+#pH day comparisons
+DO_day_dif_mod <- lm(DO_dif~treatment, data = day_dif)
+Anova(DO_day_dif_mod)
+summary(DO_day_dif_mod)
+#check_model(DW.mod.spp)
+
+DO_day_dif_emm <- emmeans::emmeans(DO_day_dif_mod, ~ treatment)
+DO_day_dif_pairs <- pairs(DO_day_dif_emm)
+DO_day_dif_pairs #MONOA and 3SP SIG HIGHER THAN FAKE A and FAKE B, 6SP ALMOST SIG HIGHER THAN FAKE A and FAKE B
+#MONO B ALMOST SIG LOWER THAN MONOA
+
+#DO night comparisons
+DO_night_dif_mod <- lm(DO_dif~treatment, data = night_dif)
+Anova(DO_night_dif_mod)
+summary(DO_night_dif_mod)
+#check_model(DW.mod.spp)
+
+DO_night_dif_emm <- emmeans::emmeans(DO_night_dif_mod, ~ treatment)
+DO_night_dif_pairs <- pairs(DO_night_dif_emm)
+DO_night_dif_pairs #NO DIFFERENCES
+
