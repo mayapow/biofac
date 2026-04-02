@@ -258,7 +258,7 @@ sump <- sump %>% select(-time, -date)
 
 ts <- left_join(td, sump, by = c("timepoint","sump"))
 
-ts <- ts %>%
+ts <- ts %>% filter(treatment != "sump") %>%
   mutate(temp_dif = temp - temp_sump,
          pH_dif = pH - pH_sump,
          mV_dif = mV - mV_sump,
