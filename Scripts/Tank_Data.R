@@ -20,6 +20,7 @@ td <- td %>%
   mutate(date_time = mdy_hm(date_time)) %>%
   mutate(date = mdy(date)) %>%
   mutate(tank = as.factor(tank)) %>% 
+  filter(date > ymd("2026-03-25")) %>%
   filter(bad == "no") #%>%
   #drop_na(temp) %>%
   #filter(day_night == "day")
@@ -474,7 +475,7 @@ DO_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_DO_dif, color 
   facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_DO_dif+se_DO_dif, ymax= mean_DO_dif-se_DO_dif), alpha = 0.5)+
   theme_bw(base_size = 20) +
-  ylim(0.1,0.6)+
+  ylim(0.1,0.65)+
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
   theme(axis.text.x = element_text(angle = 90))
 
