@@ -20,7 +20,7 @@ td <- td %>%
   mutate(date_time = mdy_hm(date_time)) %>%
   mutate(date = mdy(date)) %>%
   mutate(tank = as.factor(tank)) %>% 
-  filter(date > ymd("2026-03-25")) %>%
+  #filter(date > ymd("2026-03-25")) %>%
   filter(bad == "no") #%>%
   #drop_na(temp) %>%
   #filter(day_night == "day")
@@ -45,14 +45,14 @@ pH_pre <- ggplot(td, aes(x = date_time, y = pH, color = treatment, group = tank)
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
-mV_pre <- ggplot(td, aes(x = date_time, y = mV, color = treatment, group = tank)) +
-  geom_point(alpha = 0.5) +
-  geom_line(alpha = 0.5) +
-  facet_wrap(day_night~., nrow = 2) +
-  theme_bw(base_size = 20) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
-  scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
+# mV_pre <- ggplot(td, aes(x = date_time, y = mV, color = treatment, group = tank)) +
+#   geom_point(alpha = 0.5) +
+#   geom_line(alpha = 0.5) +
+#   facet_wrap(day_night~., nrow = 2) +
+#   theme_bw(base_size = 20) +
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
+#   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
 DO_pre <- ggplot(td, aes(x = date_time, y = DO, color = treatment, group = tank)) +
   geom_point(alpha = 0.5) +
@@ -72,24 +72,24 @@ sal_pre <- ggplot(td, aes(x = date_time, y = sal, color = treatment, group = tan
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
-cond_pre <- ggplot(td, aes(x = date_time, y = cond, color = treatment, group = tank)) +
-  geom_point(alpha = 0.5) +
-  geom_line(alpha = 0.5) +
-  facet_wrap(day_night~., nrow = 2) +
-  theme_bw(base_size = 20) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
-  scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
+# cond_pre <- ggplot(td, aes(x = date_time, y = cond, color = treatment, group = tank)) +
+#   geom_point(alpha = 0.5) +
+#   geom_line(alpha = 0.5) +
+#   facet_wrap(day_night~., nrow = 2) +
+#   theme_bw(base_size = 20) +
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
+#   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
-tank_plots <- ggarrange(temp_pre, pH_pre, mV_pre, DO_pre, sal_pre, cond_pre, 
-                        common.legend = T, nrow = 2, ncol = 3)
+tank_plots <- ggarrange(temp_pre, pH_pre, DO_pre, sal_pre, 
+                        common.legend = T, nrow = 2, ncol = 2)
 tank_plots
 
 ggsave(here("Output/tank_plots.pdf"), tank_plots, h = 15, w = 15)
 
 ##Average plots across treatments
 
-se <- function(x) sd(x)/sqrt(length(x))
+se <- function(x) sd(x,na.rm = T)/sqrt(length(x))
 
 meand <- td %>%
   mutate(timepoint = mdy_hm(timepoint)) %>%
@@ -128,17 +128,17 @@ pH_mean <- ggplot(meand, aes(x = timepoint, y = mean_pH, color = treatment)) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
   theme(axis.text.x = element_text(angle = 90)) +
   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
-ggsave(here("Output/pH_mean_treatment.pdf"), pH_mean, h = 10, w = 10)
+#ggsave(here("Output/pH_mean_treatment.pdf"), pH_mean, h = 10, w = 10)
 
-mV_mean <- ggplot(meand, aes(x = timepoint, y = mean_mV, color = treatment)) +
-  geom_point(alpha = 0.5) +
-  geom_line(alpha = 0.5) +
-  facet_wrap(day_night~., nrow = 2) +
-  geom_errorbar(aes(ymin=mean_mV+se_mV, ymax= mean_mV-se_mV), alpha = 0.5)+
-  theme_bw(base_size = 20) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
+# mV_mean <- ggplot(meand, aes(x = timepoint, y = mean_mV, color = treatment)) +
+#   geom_point(alpha = 0.5) +
+#   geom_line(alpha = 0.5) +
+#   facet_wrap(day_night~., nrow = 2) +
+#   geom_errorbar(aes(ymin=mean_mV+se_mV, ymax= mean_mV-se_mV), alpha = 0.5)+
+#   theme_bw(base_size = 20) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
 DO_mean <- ggplot(meand, aes(x = timepoint, y = mean_DO, color = treatment)) +
   geom_point(alpha = 0.5) +
@@ -149,7 +149,7 @@ DO_mean <- ggplot(meand, aes(x = timepoint, y = mean_DO, color = treatment)) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
   theme(axis.text.x = element_text(angle = 90)) +
   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
-ggsave(here("Output/DO_mean_treatment.pdf"), DO_mean, h = 10, w = 10)
+#ggsave(here("Output/DO_mean_treatment.pdf"), DO_mean, h = 10, w = 10)
 
 sal_mean <- ggplot(meand, aes(x = timepoint, y = mean_sal, color = treatment)) +
   geom_point(alpha = 0.5) +
@@ -161,19 +161,19 @@ sal_mean <- ggplot(meand, aes(x = timepoint, y = mean_sal, color = treatment)) +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
-cond_mean <- ggplot(meand, aes(x = timepoint, y = mean_cond, color = treatment)) +
-  geom_point(alpha = 0.5) +
-  geom_line(alpha = 0.5) +
-  facet_wrap(day_night~., nrow = 2) +
-  geom_errorbar(aes(ymin=mean_cond+se_cond, ymax= mean_cond-se_cond), alpha = 0.5)+
-  theme_bw(base_size = 20) +
-  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
+# cond_mean <- ggplot(meand, aes(x = timepoint, y = mean_cond, color = treatment)) +
+#   geom_point(alpha = 0.5) +
+#   geom_line(alpha = 0.5) +
+#   facet_wrap(day_night~., nrow = 2) +
+#   geom_errorbar(aes(ymin=mean_cond+se_cond, ymax= mean_cond-se_cond), alpha = 0.5)+
+#   theme_bw(base_size = 20) +
+#   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
+#   theme(axis.text.x = element_text(angle = 90)) +
+#   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
 
 
-mean_plots <- ggarrange(temp_mean, pH_mean, mV_mean, DO_mean, sal_mean, cond_mean, 
-                       common.legend = T, nrow = 2, ncol = 3)
+mean_plots <- ggarrange(temp_mean, pH_mean, DO_mean, sal_mean, 
+                       common.legend = T, nrow = 2, ncol = 2)
 mean_plots
 
 ggsave(here("Output/mean_treatment_plots.pdf"), mean_plots, h = 15, w = 15)
@@ -191,14 +191,14 @@ day_night_sum <- td %>%
                    se_mV = se(mV),
                    mean_DO = mean(DO),
                    se_DO = se(DO),
-                   mean_sal = mean(sal),
+                   mean_sal = mean(sal, na.rm = TRUE),
                    se_sal = se(sal),
-                   mean_cond = mean(cond),
+                   mean_cond = mean(cond, na.rm = T),
                    se_cond = se(cond),
                    .groups = "drop")
 
 temp_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_temp, color = treatment)) +
-  geom_point(alpha = 0.5) +
+  geom_point() +
   #geom_line() +
   facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_temp+se_temp, ymax= mean_temp-se_temp), alpha = 0.5)+
@@ -207,7 +207,7 @@ temp_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_temp, color = tr
   theme(axis.text.x = element_text(angle = 90))
 
 pH_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_pH, color = treatment)) +
-  geom_point(alpha = 0.5) +
+  geom_point() +
   #geom_line() +
   facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_pH+se_pH, ymax= mean_pH-se_pH), alpha = 0.5)+
@@ -225,7 +225,7 @@ pH_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_pH, color = treatm
 #   theme(axis.text.x = element_text(angle = 90))
 
 DO_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_DO, color = treatment)) +
-  geom_point(alpha = 0.5) +
+  geom_point() +
   #geom_line() +
   facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_DO+se_DO, ymax= mean_DO-se_DO), alpha = 0.5)+
@@ -234,7 +234,7 @@ DO_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_DO, color = treatm
   theme(axis.text.x = element_text(angle = 90))
 
 sal_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_sal, color = treatment)) +
-  geom_point(alpha = 0.5) +
+  geom_point() +
   #geom_line() +
   facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_sal+se_sal, ymax= mean_sal-se_sal), alpha = 0.5)+
