@@ -470,8 +470,8 @@ pH_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_pH_dif, color 
 DO_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_DO_dif, color = treatment)) +
   geom_point() +
   #geom_line() +
-  stat_summary(geom = "text", fun = max, vjust = -1, size = 8,
-               label = c("a", "ab", "b", "b", "a", "ab", "","","","","",""))+
+  #stat_summary(geom = "text", fun = max, vjust = -1, size = 8,
+  #             label = c("a", "ab", "b", "b", "a", "ab", "","","","","",""))+
   facet_wrap(.~day_night, nrow = 1) +
   geom_errorbar(aes(ymin=mean_DO_dif+se_DO_dif, ymax= mean_DO_dif-se_DO_dif), alpha = 0.5)+
   theme_bw(base_size = 20) +
