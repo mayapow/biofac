@@ -85,7 +85,7 @@ Sample_Info <- Sample_Info %>%
 #generate a 4 column dataframe with specific column names
 # data is in umol.L.sec
 
-n_light_levels<-1 # number of unique light levels
+n_light_levels<-2 # number of unique light levels
 
 RespoR <- tibble(.rows =length(filenames_final)*n_light_levels,
                  sample_ID = NA,
@@ -218,11 +218,11 @@ for(i in 1:length(filenames_final)) {
 
 #export raw data and read back in as a failsafe 
 #this allows me to not have to run the for loop again !!!!!
-write_csv(RespoR, here("Data","RespoFiles","PI","Respo_R.csv"))  
+write_csv(RespoR, here("Data","RespoFiles","VEST","Respo_R.csv"))  
 
 ##### 
 
-RespoR <- read_csv(here("Data","RespoFiles","PI","Respo_R.csv"))
+RespoR <- read_csv(here("Data","RespoFiles","VEST","Respo_R.csv"))
 
 ######### Calculate Respiration rate ###############
 ############################################
@@ -269,7 +269,7 @@ Blank_only <- RespoR2 %>%
   summarise(blank.rate = mean(umol.sec, na.rm = TRUE))
 
 #############################
-write_csv(RespoR_Normalized , here("Data","RespoFiles","PI","Respo_RNormalized_AllPIRates.csv"))  
+write_csv(RespoR_Normalized , here("Data","RespoFiles","VEST","Respo_RNormalized_AllPIRates.csv"))  
 
 
 ## Plot the blanks across treatments to make sure nothing is funky
@@ -277,13 +277,15 @@ Blank_only %>%
   ggplot(aes(x = Light_value, blank.rate)) +
   geom_point()
 
-#  basic plot of rates versus light before you make the real PI curve 
-basic_PI_plot <- RespoR_Normalized %>%
-  ggplot(aes(x = Light_value, y = umol.cm2.hr, color = frag_ID, group = frag_ID))+
+#  basic plot of rates versus light
+Respo_vest <- RespoR2 %>% 
+  mutate(umol.hr_uncorr = (umol.sec*3600))
+basic_plot <- Respo_vest %>%
+  ggplot(aes(x = Light_value, y = umol.hr_uncorr, color = frag_ID, group = frag_ID))+
   geom_point()+
   geom_line()+
   facet_wrap(~species, scales = "free")
-ggsave(here("Output","PI","basic_PI_plot.pdf"), basic_PI_plot, h=4, w=8)
+ggsave(here("Output","VEST","basic_plot.pdf"), basic_plot, h=4, w=8)
 
 ### run an nls model for PI curve and extract Ik for each species ###
 

@@ -251,7 +251,7 @@ sal_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_sal, color = trea
 #   theme(axis.text.x = element_text(angle = 90))
 
 
-dnsum_plots <- ggarrange(temp_dnsum, pH_dnsum, DO_dnsum, sal_dnsum, 
+dnsum_plots <- ggarrange(pH_dnsum, DO_dnsum, temp_dnsum, sal_dnsum, 
                        common.legend = T, nrow = 2, ncol = 2)
 dnsum_plots
 
@@ -496,11 +496,13 @@ sal_dif_dnsum <- ggplot(day_night_sum, aes(x = treatment, y = mean_sal_dif, colo
 #   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
 #   theme(axis.text.x = element_text(angle = 90))
 
-dnsum_dif_plots <- ggarrange(temp_dif_dnsum, pH_dif_dnsum, DO_dif_dnsum, sal_dif_dnsum, 
+dnsum_dif_plots <- ggarrange(pH_dif_dnsum, DO_dif_dnsum, temp_dif_dnsum, sal_dif_dnsum, 
                          common.legend = T, nrow = 2, ncol = 2)
 dnsum_dif_plots
 
 ggsave(here("Output/mean_dif_treatment_day_night_plots.pdf"), dnsum_dif_plots, h = 10, w = 10)
+
+
 
 ####Stats
 
