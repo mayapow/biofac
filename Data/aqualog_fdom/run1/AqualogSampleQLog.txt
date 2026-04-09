@@ -1,0 +1,173 @@
+#########################################################################
+Log File: C:\Users\Public\Documents\Jobin Yvon\Data\AqualogSampleQLog.txt
+Date: Thursday, September 02, 2021
+Time: 3:09:27 PM
+#########################################################################
+[2021-09-02 15-09-27] 
+Aqualog Sample Q Experimental Parameters:
+[Aqualog Sample Q File] C:\Users\Public\Documents\Aqualog\Data\Keleher\Trial_2\Keleher_Trial2_AqualogSampleQ.aqu
+[Aqualog Experiment File] C:\Users\Public\Documents\Aqualog\Data\Keleher\Trial_2\Trial_2_DfltAqualogSampleQ.xml
+[Output Destination Folder] C:\Users\Public\Documents\Jobin Yvon\Data\
+
+Output File Names:
+[Blank Group Prefix] Group
+[Blank File Base] Blank
+[Sample Prefix] Sample
+
+Blank & Sample Setup:
+[Blank Group Count] 1
+[Blank Group Start] 1
+[Samples Per Blank] 7
+[Blank Group Start] 1
+[Total Number of Blanks & Samples] 8
+
+Post Prossessing Options:
+
+Export Options:
+ASCII = True
+ABS = True
+BEM = True
+SEM = True
+
+Delay Options:
+Single Cell Kinetics = False
+Delay Before First Blank = 0 Seconds
+Delay Between Each Experiment = 0 Seconds
+
+Starting (Run/Resume) Position:
+[Blank Start Index] 0
+[Sample Start Index] 0
+################################################################################
+[2021-09-02 15-09-27] STARTING Aqualog SampleQ Execution
+[2021-09-02 15-13-50] Experiment 01 of 08 [Blank 000, Sample 0000] [Files: Group001Blank*] Start Done
+[2021-09-02 15-14-46] Experiment 02 of 08 [Blank 000, Sample 0001] [Files: Group001Sample0001*] Start Done
+[2021-09-02 15-16-47] Experiment 03 of 08 [Blank 000, Sample 0002] [Files: Group001Sample0002*] Start Done
+[2021-09-02 15-18-00] Experiment 04 of 08 [Blank 000, Sample 0003] [Files: Group001Sample0003*] Start Done
+[2021-09-02 15-20-41] Experiment 05 of 08 [Blank 000, Sample 0004] [Files: Group001Sample0004*] Start Done
+[2021-09-02 15-21-54] Experiment 06 of 08 [Blank 000, Sample 0005] [Files: Group001Sample0005*] Start Done
+[2021-09-02 15-23-26] Experiment 07 of 08 [Blank 000, Sample 0006] [Files: Group001Sample0006*] Start Done
+[2021-09-02 15-24-39] Experiment 08 of 08 [Blank 000, Sample 0007] [Files: Group001Sample0007*] Start Done
+[2021-09-02 15-27-05] COMPLETED Aqualog SampleQ Execution
+--------------------------------------------------------------------------------
+
+
+#########################################################################
+Log File: C:\Users\Public\Documents\Jobin Yvon\Data\AqualogSampleQLog.txt
+Date: Thursday, July 21, 2022
+Time: 10:24:54 AM
+#########################################################################
+[2022-07-21 10-24-54] 
+Aqualog Sample Q Experimental Parameters:
+[Aqualog Sample Q File] 
+[Aqualog Experiment File] C:\Users\Craig Nelson\Desktop\Swift\sgd\AqualogSampleQ.xml
+[Output Destination Folder] C:\Users\Public\Documents\Jobin Yvon\Data\
+
+Output File Names:
+[Blank Group Prefix] Group
+[Blank File Base] Blank
+[Sample Prefix] Sample
+
+Blank & Sample Setup:
+[Blank Group Count] 1
+[Blank Group Start] 1
+[Samples Per Blank] 3
+[Blank Group Start] 1
+[Total Number of Blanks & Samples] 4
+
+Post Prossessing Options:
+
+Export Options:
+ASCII = True
+ABS = True
+BEM = True
+SEM = True
+
+Delay Options:
+Single Cell Kinetics = False
+Delay Before First Blank = 0 Seconds
+Delay Between Each Experiment = 0 Seconds
+
+Starting (Run/Resume) Position:
+[Blank Start Index] 0
+[Sample Start Index] 0
+################################################################################
+[2022-07-21 10-24-54] STARTING Aqualog SampleQ Execution
+[2022-07-21 10-24-57] Experiment 01 of 04 [Blank 000, Sample 0000] [Files: Group001Blank*] Start
+
+#########################################################################
+Log File: C:\Users\Public\Documents\Jobin Yvon\Data\AqualogSampleQLog.txt
+Date: Tuesday, April 07, 2026
+Time: 9:28:14 AM
+#########################################################################
+[2026-04-07 09-28-14] 
+Aqualog Sample Q Experimental Parameters:
+[Aqualog Sample Q File] C:\Users\Public\Documents\Aqualog\Data\Donahue\Powell\AqualogSampleQ.aqu
+[Aqualog Experiment File] C:\Users\Public\Documents\Aqualog\Data\Donahue\Powell\Donahue.AqualogSampleQ.Setup.xml
+[Output Destination Folder] C:\Users\Public\Documents\Jobin Yvon\Data\
+
+Output File Names:
+[Blank Group Prefix] Group
+[Blank File Base] Blank
+[Sample Prefix] Sample
+
+Blank & Sample Setup:
+[Blank Group Count] 3
+[Blank Group Start] 1
+[Samples Per Blank] 10
+[Blank Group Start] 1
+[Total Number of Blanks & Samples] 33
+
+Post Prossessing Options:
+
+Export Options:
+OGW = True
+ASCII = True
+ABS = True
+BEM = True
+SEM = True
+
+Delay Options:
+Single Cell Kinetics = False
+Delay Before First Blank = 0 Seconds
+Delay Between Each Experiment = 0 Seconds
+
+Starting (Run/Resume) Position:
+[Blank Start Index] 0
+[Sample Start Index] 0
+################################################################################
+[2026-04-07 09-28-14] STARTING Aqualog SampleQ Execution
+[2026-04-07 09-28-31] Experiment 01 of 33 [Blank 000, Sample 0000] [Files: Group001Blank*] Start Done
+[2026-04-07 09-32-28] Experiment 02 of 33 [Blank 000, Sample 0001] [Files: Group001Sample0001*] Start Done
+[2026-04-07 09-36-49] Experiment 03 of 33 [Blank 000, Sample 0002] [Files: Group001Sample0002*] Start Done
+[2026-04-07 09-40-56] Experiment 04 of 33 [Blank 000, Sample 0003] [Files: Group001Sample0003*] Start Done
+[2026-04-07 09-45-20] Experiment 05 of 33 [Blank 000, Sample 0004] [Files: Group001Sample0004*] Start Done
+[2026-04-07 09-49-27] Experiment 06 of 33 [Blank 000, Sample 0005] [Files: Group001Sample0005*] Start Done
+[2026-04-07 09-56-53] Experiment 07 of 33 [Blank 000, Sample 0006] [Files: Group001Sample0006*] Start Done
+[2026-04-07 10-01-00] Experiment 08 of 33 [Blank 000, Sample 0007] [Files: Group001Sample0007*] Start Done
+[2026-04-07 10-05-51] Experiment 09 of 33 [Blank 000, Sample 0008] [Files: Group001Sample0008*] Start Done
+[2026-04-07 10-09-58] Experiment 10 of 33 [Blank 000, Sample 0009] [Files: Group001Sample0009*] Start Done
+[2026-04-07 10-14-38] Experiment 11 of 33 [Blank 000, Sample 0010] [Files: Group001Sample0010*] Start Done
+[2026-04-07 10-18-45] Experiment 12 of 33 [Blank 001, Sample 0000] [Files: Group002Blank*] Start Done
+[2026-04-07 10-23-34] Experiment 13 of 33 [Blank 001, Sample 0001] [Files: Group002Sample0001*] Start Done
+[2026-04-07 10-27-41] Experiment 14 of 33 [Blank 001, Sample 0002] [Files: Group002Sample0002*] Start Done
+[2026-04-07 10-32-27] Experiment 15 of 33 [Blank 001, Sample 0003] [Files: Group002Sample0003*] Start Done
+[2026-04-07 10-36-34] Experiment 16 of 33 [Blank 001, Sample 0004] [Files: Group002Sample0004*] Start Done
+[2026-04-07 10-41-14] Experiment 17 of 33 [Blank 001, Sample 0005] [Files: Group002Sample0005*] Start Done
+[2026-04-07 10-45-21] Experiment 18 of 33 [Blank 001, Sample 0006] [Files: Group002Sample0006*] Start Done
+[2026-04-07 10-49-52] Experiment 19 of 33 [Blank 001, Sample 0007] [Files: Group002Sample0007*] Start Done
+[2026-04-07 10-53-58] Experiment 20 of 33 [Blank 001, Sample 0008] [Files: Group002Sample0008*] Start Done
+[2026-04-07 10-58-53] Experiment 21 of 33 [Blank 001, Sample 0009] [Files: Group002Sample0009*] Start Done
+[2026-04-07 11-02-59] Experiment 22 of 33 [Blank 001, Sample 0010] [Files: Group002Sample0010*] Start Done
+[2026-04-07 11-07-43] Experiment 23 of 33 [Blank 002, Sample 0000] [Files: Group003Blank*] Start Done
+[2026-04-07 11-11-43] Experiment 24 of 33 [Blank 002, Sample 0001] [Files: Group003Sample0001*] Start Done
+[2026-04-07 11-16-19] Experiment 25 of 33 [Blank 002, Sample 0002] [Files: Group003Sample0002*] Start Done
+[2026-04-07 11-20-26] Experiment 26 of 33 [Blank 002, Sample 0003] [Files: Group003Sample0003*] Start Done
+[2026-04-07 11-31-31] Experiment 27 of 33 [Blank 002, Sample 0004] [Files: Group003Sample0004*] Start Done
+[2026-04-07 11-35-38] Experiment 28 of 33 [Blank 002, Sample 0005] [Files: Group003Sample0005*] Start Done
+[2026-04-07 11-40-22] Experiment 29 of 33 [Blank 002, Sample 0006] [Files: Group003Sample0006*] Start Done
+[2026-04-07 11-44-29] Experiment 30 of 33 [Blank 002, Sample 0007] [Files: Group003Sample0007*] Start Done
+[2026-04-07 11-49-01] Experiment 31 of 33 [Blank 002, Sample 0008] [Files: Group003Sample0008*] Start Done
+[2026-04-07 11-53-08] Experiment 32 of 33 [Blank 002, Sample 0009] [Files: Group003Sample0009*] Start Done
+[2026-04-07 11-57-37] Experiment 33 of 33 [Blank 002, Sample 0010] [Files: Group003Sample0010*] Start Done
+[2026-04-07 12-01-41] COMPLETED Aqualog SampleQ Execution
+--------------------------------------------------------------------------------
