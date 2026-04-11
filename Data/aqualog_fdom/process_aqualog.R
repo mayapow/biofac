@@ -16,20 +16,41 @@ run1 <- process_aqualog(
   sample_key_file = "SampleDataSheet.txt"
 )
 
-# run2 <- process_aqualog(
-#   data_directory = file.path(base_dir, "run2"),
-#   run_name = "run2",
-#   sample_key_file = "SampleDataSheet.txt"
-# )
+run2 <- process_aqualog(
+  data_directory = file.path(base_dir, "run2"),
+  run_name = "run2",
+  sample_key_file = "SampleDataSheet.txt"
+)
+
+run3 <- process_aqualog(
+  data_directory = file.path(base_dir, "run3"),
+  run_name = "run3",
+  sample_key_file = "SampleDataSheet.txt"
+)
 
 # re-run with custom org sheet if needed to fix blank assignments
 # uncomment only if needed
-# run2 <- process_aqualog(
-#   data_directory = file.path(base_dir, "run2"),
-#   run_name = "run2",
-#   sample_key_file = "SampleDataSheet.txt",
-#   org_file = "processed_data/run2_sample_sheet_clean.csv"
-# )
+
+run1 <- process_aqualog(
+  data_directory = file.path(base_dir, "run1"),
+  run_name = "run1",
+  sample_key_file = "SampleDataSheet.txt",
+  org_file = "processed_data/run1_sample_sheet_clean.csv"
+)
+
+run2 <- process_aqualog(
+  data_directory = file.path(base_dir, "run2"),
+  run_name = "run2",
+  sample_key_file = "SampleDataSheet.txt",
+  org_file = "processed_data/run2_sample_sheet_clean.csv"
+)
+
+run3 <- process_aqualog(
+  data_directory = file.path(base_dir, "run3"),
+  run_name = "run3",
+  sample_key_file = "SampleDataSheet.txt",
+  org_file = "processed_data/run3_sample_sheet_clean.csv"
+)
 
 # automatically grab all run folders
 run_dirs <- list.dirs(path = base_dir, full.names = FALSE, recursive = FALSE)
@@ -105,6 +126,14 @@ hist(run1$indices$CobleT, breaks = 15)
 # CobleC (345 / 445)
 # - also humic-like, often dominant in natural waters
 
+# CobleB (275 / 305)
+# - protein-like (tyrosine)
+# - very fresh / labile DOM signal
+
+# Fpeak (240 / 299)
+# - general protein-like fluorescence
+# - can be biological production or contamination depending on context
+
 # CobleM (310 / 410)
 # - microbial humic-like → kind of processed/microbial DOM
 
@@ -137,14 +166,50 @@ indices <- read.csv(file.path(base_dir, "compiled_runs", "all_sample_indices.csv
 
 metadata <- read.csv(file.path(base_dir, "metadata.csv")) 
 data <- left_join(indices, metadata, by = "UniqueID")
+ data <- data %>%
+   mutate(timepoint = as.POSIXct(timepoint, format = "%m/%d/%Y %H:%M"))
+ data <- data %>%
+   mutate(date = as.Date(date, format = "%m/%d/%Y"))
+ 
+ main_data <- data %>%
+   filter(date != as.Date("2026-04-06"))
+ 
+fullday_data <- data %>%
+   filter(date == as.Date("2026-04-06"))
 
+fullday_long <- fullday_data %>%
+  pivot_longer(
+    cols = c(FI, Fpeak, CobleB, CobleA, CobleT, M_to_C),
+    names_to = "Index",
+    values_to = "Value"
+  )
 
- data_long <- data %>%
-   pivot_longer(cols = c(FI, HIX, BIX, CobleA, CobleT, M_to_C),
-                names_to = "Index",
-               values_to = "Value")
-
-ggplot(data_long, aes(x = run_name, y = Value, fill = run_name)) +
-  geom_point() +
+ggplot(fullday_long, aes(x = time, y = Value, fill = treatment)) +
+  geom_boxplot() +
   facet_wrap(~Index, scales = "free_y") +
-  theme_bw()
+  theme_bw() +
+  labs(
+    title = "High-frequency sampling (April 6, 2026)",
+    x = "Time",
+    y = "Value"
+  )+
+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+main_long <- main_data %>%
+  pivot_longer(
+    cols = c(FI, Fpeak, CobleB, CobleA, CobleT, M_to_C),
+    names_to = "Index",
+    values_to = "Value"
+  )
+
+ ggplot(main_long, aes(x = date, y = Value, fill = treatment)) +
+   geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+   facet_grid(Index~day_night, scales = "free_y") +
+   theme_bw() +
+   labs(
+     x = "Timepoint",
+     y = "Value",
+     fill = "Treatment",
+     color = "Treatment"
+   ) +
+   theme(axis.text.x = element_text(angle = 45, hjust = 1))
