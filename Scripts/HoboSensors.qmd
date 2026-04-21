@@ -10,15 +10,230 @@ editor: visual
 library(tidyverse)
 library(here)
 library(lubridate)
+library(seacarb)
+library(broom)
 ```
 
 ```{r}
-MiniDot1 <- read_csv(here("Data/Tank_Data/HOBOSensors/646496_MiniDot_Tank24.csv"))
-MiniDot2 <- read_csv(here("Data/Tank_Data/HOBOSensors/735729_MiniDot_Sump5.csv"))
-DO1 <- read_csv(here("Data/Tank_Data/HOBOSensors/22482990_DO_CTD_SUMP5.csv"))
-DO2 <- read_csv(here("Data/Tank_Data/HOBOSensors/22482991_DO_CTD_Tank24.csv"))
-pH1 <- read_csv(here("Data/Tank_Data/HOBOSensors/22491060_pH_SUMP5.csv"))
-pH2 <- read_csv(here("Data/Tank_Data/HOBOSensors/22491061_pH_Tank24.csv"))
+TrisCalpH1 <- read_csv(here("Data/Tank_Data/HOBOSensors/22491059_2026-04-13_TrisCal.csv"))
+TrisCalpH2 <- read_csv(here("Data/Tank_Data/HOBOSensors/22491060_2026-04-13_TrisCal.csv"))
+TrisCalpH3 <- read_csv(here("Data/Tank_Data/HOBOSensors/22491061_2026-04-13_TrisCal.csv"))
+
+pH1Data <- read_csv(here("Data/Tank_Data/HOBOSensors/22491059_2026-04-20_pH.csv"))
+pH2Data <- read_csv(here("Data/Tank_Data/HOBOSensors/22491060_2026-04-20_pH.csv"))
+pH3Data <- read_csv(here("Data/Tank_Data/HOBOSensors/22491061_2026-04-20_pH.csv"))
+
+CTDO1 <- read_csv(here("Data/Tank_Data/HOBOSensors/22482990_2026-04-20_CTDO.csv"))
+CTDO2 <- read_csv(here("Data/Tank_Data/HOBOSensors/22482991_2026-04-20_CTDO.csv"))
+```
+
+Add a column to each pH data of the sensor serial number to identify from each other.
+
+CTDO2
+
+```{r}
+TrisCalpH1 <- TrisCalpH1 %>%
+  mutate(SensorNumber = "22491059") 
+TrisCalpH2 <- TrisCalpH2 %>%
+  mutate(SensorNumber = "22491060")
+TrisCalpH3 <- TrisCalpH3 %>%
+  mutate(SensorNumber = "22491061")
+
+pH1Data <- pH1Data %>%
+  mutate(SensorNumber = "22491059")
+pH2Data <- pH2Data %>%
+  mutate(SensorNumber = "22491060")
+pH3Data <- pH3Data %>%
+  mutate(SensorNumber = "22491061")
+
+CTDO1 <- CTDO1 %>%
+  mutate(SensorNumber = "22482990") %>%
+  select(-1, -14:-17) %>%
+  set_names("DateTime", "Temperature1", "MeasuredDO", "SalinityAdjustedDO", "Temperature2", "AbsolutePressure", "ElectricalConductivity", "SpecificConductivity", "Salinity", "TotalDissolvedSolids", "BarometricPressure","Depth", "SensorNumber" )
+
+CTDO2 <- CTDO2 %>%
+  mutate(SensorNumber = "22482291") %>%
+    select(-1, -14:-17) %>%
+  set_names("DateTime", "Temperature1", "MeasuredDO", "SalinityAdjustedDO", "Temperature2", "AbsolutePressure", "ElectricalConductivity", "SpecificConductivity", "Salinity", "TotalDissolvedSolids", "BarometricPressure","Depth", "SensorNumber" )
+
+```
+
+Combine all the TrisCal data to one dataframe and pH data
+
+```{r}
+TrisCalData <- rbind(TrisCalpH1, TrisCalpH2, TrisCalpH3) %>%
+  select(-1,-6:-10) %>%
+  set_names("DateTime", "TrispH", "TrisTemperature", "TrisMillivolts", "SensorNumber" ) %>%
+  select(SensorNumber, everything()) %>%
+  mutate(DateTime = lubridate::mdy_hms(DateTime)) %>%
+  mutate(DateTime = floor_date(DateTime ,"min")) %>%
+  mutate(TrisDate = lubridate::ymd("2026-04-13")) %>%
+  drop_na()
+
+  
+pHData <- rbind(pH1Data, pH2Data, pH3Data) %>%
+    select(-1) %>%
+  set_names("DateTime", "pH", "Temperature", "Millivolts", "SensorNumber" ) %>%
+  select(SensorNumber, everything()) %>%
+  mutate(DateTime = lubridate::mdy_hms(DateTime)) %>%
+    mutate(DateTime = floor_date(DateTime ,"min")) %>%
+#Add where they were column
+  mutate(Location = ifelse(DateTime >= ymd_hms("2026-04-16 15:00:00"), "Reef", "Tank13" )) %>%
+    filter(between(DateTime,ymd_hms("2026-04-13 16:35:00"), ymd_hms("2026-04-18 15:00:00")))
+
+
+
+
+CTDOData <- rbind(CTDO1, CTDO2) %>%
+  select(SensorNumber, everything()) %>%
+   mutate(DateTime = lubridate::mdy_hms(DateTime)) %>%
+    mutate(DateTime = floor_date(DateTime ,"min")) %>%
+   mutate(Location = ifelse(DateTime >= ymd_hms("2026-04-16 15:00:00"), "Reef", "Tank13" )) %>%
+    filter(between(DateTime,ymd_hms("2026-04-13 16:35:00"), ymd_hms("2026-04-18 15:00:00")))
+
+
+Sal <- CTDOData %>% select(DateTime, Salinity)
+
+pH_Salinity <- left_join(pHData, Sal, by = "DateTime", relationship = "many-to-many") %>% mutate(TrisDate = lubridate::ymd("2026-04-13")) %>%
+    drop_na() 
+```
+
+```{r}
+## take the mV calibration files by each date and use them to calculate pH
+pHSlope<-TrisCalData %>%
+  dplyr::nest_by(TrisDate, SensorNumber) %>%
+  dplyr::mutate(fitpH = list(lm(TrisMillivolts~TrisTemperature, data = TrisCalData))) %>% # linear regression of mV and temp of the tris
+  
+  reframe(broom::tidy(fitpH)) %>% # make the output tidy
+  select(TrisDate, SensorNumber, term, estimate) %>%
+  pivot_wider(names_from = term, values_from = estimate) %>%# put slope and intercept in their own column
+
+  left_join(pH_Salinity,.,by = c("TrisDate", "SensorNumber")) %>% # join with the pH sample data
+  
+ # separate(DateTime,sep=" ",into=c('date','time')) %>%
+  #fill('(Intercept)',TrisTemperature) %>%
+  #drop_na() %>%
+  mutate(TrisMillivolts = Temperature*TrisTemperature + `(Intercept)`) %>% # calculate the mV of the tris at temperature in which the pH of samples were measured
+  drop_na() %>%
+  mutate(pHT = pH(Ex=Millivolts,Etris=TrisMillivolts,S=Salinity,T=Temperature)) %>% # calculate pH of the samples using the pH seacarb function
+  #mutate(pH_insitu = pHinsi(pH = pH, ALK = TA_Raw, Tinsi = TempInSitu, Tlab = Temp, S = Salinity_lab_Silbiger)) %>%
+  select(DateTime,SensorNumber,pHT) # ,Salinity_lab ## need to calculate pH insi then it is done
+ # unite(date,c(date,time),sep=" ")
+
+View(pHSlope)
+
+pH_HOBO <- left_join(pHData, pHSlope, by = c("DateTime", "SensorNumber"))
+```
+
+OrionData \<- data.frame(DateTime = c(mdy_hm("04-13-2026 20:29:00","04-14-2026 12:33:00" , "04-15-2026 12:42:00","04-15-2026 20:24:00" , "04-16-2026 12:37:00")),
+
+DO =c(6.57,7.50 ,7.72, 6.43, 7.47 ),
+
+Salinity = c(34.63, 34.82, 34.25, 34.48, 34.43 ),
+
+pH = c(8.12, 8.24, 8.19, 8.06, 8.17),
+
+Temperature1 = c(24.849,30.101, 28.658, 25.414, 30.480)
+
+```{r}
+OrionData <- data.frame(DateTime = c(mdy_hms("04-13-2026 20:29:00","04-14-2026 12:33:00" , "04-15-2026 12:42:00","04-15-2026 20:24:00" , "04-16-2026 12:37:00")), 
+              SalinityAdjustedDO =c(6.57,7.50 ,7.72, 6.43, 7.47 ), 
+              Salinity = c(34.63, 34.82, 34.25, 34.48, 34.43 ),
+              pH = c(8.12, 8.24, 8.19, 8.06, 8.17),
+              Temperature1 = c(24.849,30.101, 28.658, 25.414, 30.480),
+            
+              Location = c("Tank13", "Tank13", "Tank13", "Tank13", "Tank13")
+                        )
+
+pHOrionData <- data.frame(DateTime = c(mdy_hm("03-18-2026 12:43","03-18-2026 20:29" , "03-18-2026 12:52","03-18-2026 20:39" )), 
+                          pH = c(8.16, 8.09, 8.11, 8.07), 
+                          Millivolts = c(-66.6, -61.9, -62.9, -60.6), 
+                          Tank = c("Tank24", "Tank24", "Sump5", "Sump5"))
+```
+
+```{r}
+ ggplot(pH_HOBO, aes(DateTime, pHT, group_by = "SensorNumber", color = SensorNumber)) +
+  geom_point() +
+ 
+   facet_wrap(~Location, scales = "free") +
+     scale_x_datetime(date_breaks = "6 hours") +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ 
+  ggsave(here("Output","pHTPlot_Hobos.png"), 
+            width =12, height =6)
+ 
+```
+
+```{r}
+
+pHPlot <- ggplot(pH_HOBO, aes(DateTime, pH, group_by = "SensorNumber", color = SensorNumber)) +
+  geom_point() +
+  scale_x_datetime(date_breaks = "6 hours") +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ 
+
+  pHPlot <- pHP +  
+  geom_point(data =OrionData, color = "blue", size =2) +
+   facet_wrap(~Location, scales = "free") 
+  pHPlot
+  
+   ggsave(here("Output","pHPlot_Hobos.png"), 
+            width =12, height =6)
+```
+
+```{r}
+DO <- ggplot(CTDOData, aes(DateTime, SalinityAdjustedDO, group_by = "SensorNumber", color = SensorNumber)) +
+  geom_point() +
+   facet_wrap(~Location, scales = "free") +
+   scale_x_datetime(date_breaks = "6 hours") +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+  DOPlot <- DO +  
+  geom_point(data =OrionData, color = "blue", size =2)
+  
+  ggsave(here("Output","DOPlot_Hobos_Orion.png"), 
+            width =12, height =6)
+
+```
+
+```{r}
+TemperaturePlot1 <- ggplot(CTDOData, aes(DateTime, Temperature1, group_by = "SensorNumber", color = SensorNumber)) +
+  geom_point() +
+    facet_wrap(~Location, scales = "free") +
+  scale_x_datetime(date_breaks = "6 hours") +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+TemperaturePlot <- TemperaturePlot1 + 
+  geom_point(data =OrionData, color = "blue", size =2)
+  
+ggsave(here("Output","TemperaturePlot_Hobos_Orion.png"), 
+            width =12, height =6)
+```
+
+```{r}
+SalinityP <- ggplot(CTDOData, aes(DateTime, Salinity, group_by = "SensorNumber", color = SensorNumber)) +
+  geom_point() +
+  facet_wrap(~Location, scales = "free") +
+    scale_x_datetime(date_breaks = "6 hours") +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+SalinityPlot <- SalinityP + 
+  geom_point(data =OrionData, color = "blue", size =2)
+
+ggsave(here("Output","SalinityPlot_Hobos_Orion.png"), 
+            width =12, height =6)
+```
+
+```{r}
+ggplot(CTDOData, aes(DateTime, Depth, group_by = "SensorNumber", color = SensorNumber)) +
+  geom_point() +
+  facet_wrap(~Location, scales = "free") +
+      scale_x_datetime(date_breaks = "6 hours") +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(here("Output", "DepthPlot_HOBOS.png"), 
+       width = 12, height =6)
 ```
 
 The `echo: false` option disables the printing of code (only output is displayed).
@@ -109,4 +324,91 @@ ggsave(here("Output","DOPlot.png"),
   geom_point() 
 
 g
+```
+
+```{r}
+
+MiniDotData <- full_join(MiniDot1, MiniDot2)
+CTDOData <- full_join(CTDDO1, CTDDO2)
+
+
+  
+CTDOData_Sump <- CTDOData %>% mutate(Date_Time = lubridate::mdy_hm(Date_Time)) %>%
+  filter(between(Date_Time,mdy_hm("03-27-2026 20:00"), mdy_hm("04-06_26 09:00")))
+
+
+pHData <- rbind(pH1, pH2) 
+phDataFilter <- pHData %>% mutate(Date_Time = lubridate::mdy_hm(Date_Time)) %>%
+  filter(between(Date_Time,mdy_hm("03-27-2026 20:00"), mdy_hm("04-06_26 09:00")))
+
+```
+
+```{r}
+CTDOOrionData <- data.frame(Date_Time = c(mdy_hm("03-30-2026 12:50","03-30-2026 20:44", "03-31-2026 12:27", "04-01-2026 12:46", "04-01-2026 20:47", "04-02-2026 12:35", "04-03-2026 13:21","04-04-2026 12:52", "04-05-2026 12:54", "04-06-2026 06:54")), 
+              DO =c(7.39, 6.98, 7.18, 7.00, 6.63, 6.92, 7.18,7.24, 7.06, 6.58),
+              Salinity =c(33.6 ,33.29 ,34.42,35.04, 34.91, 35.29, 33.178,33.72, 33.91, 34.14), 
+              pH = c( 8.16, 8.14, 8.11 ,8.14, 8.14, 8.14, 8.17,8.18, 8.14, 8.10),
+              Temperature1 = c(24.962 ,24.447 ,24.917, 24.714,24.378, 24.758, 24.071, 25.733,24.722, 24.407))
+```
+
+```{r}
+DOPlot1 <- ggplot(CTDOData_Sump, aes(Date_Time, DO, group_by = "Instrument", color = Instrument)) +
+  geom_point() +
+  scale_x_datetime(date_breaks = "6 hours") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+DOPlot1 +
+  geom_point(data =CTDOOrionData, color = "blue", size =5)
+
+ ggsave(here("Output","DOPlot.png"), 
+            width =12, height =6)
+```
+
+```{r}
+ SalinityPlot <- ggplot(CTDOData_Sump, aes(Date_Time, Salinity, group_by = "Instrument", color = Instrument)) +
+  geom_point() +
+   scale_x_datetime(date_breaks = "6 hours") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ 
+SalinityPlot +
+  geom_point(data =CTDOOrionData, color = "blue", size =5)
+
+ ggsave(here("Output","SalinityPlot.png"), 
+            width =12, height =6)
+```
+
+```{r}
+
+ ggplot(CTDOData_Sump, aes(Date_Time, Pressure, group_by = "Instrument", color = Instrument)) +
+  geom_point() +
+      scale_x_datetime(date_breaks = "6 hours") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ 
+  ggsave(here("Output","PressurePlot.png"), 
+            width =12, height =6)
+```
+
+```{r}
+
+ pHPlot <- ggplot(phDataFilter, aes(Date_Time, pH, group_by = "Instrument", color = Instrument)) +
+  geom_point() +
+      scale_x_datetime(date_breaks = "6 hours") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ 
+ pHPlot + 
+  geom_point(data =CTDOOrionData, color = "blue", size =5)
+  ggsave(here("Output","pHPlot.png"), 
+            width =12, height =6)
+```
+
+```{r}
+TempPlot <- ggplot(CTDOData_Sump, aes(Date_Time, Temperature1, group_by = "Instrument", color = Instrument)) +
+  geom_point() +
+  scale_x_datetime(date_breaks = "6 hours") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  TempPlot
+TempPlot +
+  geom_point(data =CTDOOrionData, color = "blue", size =5)
+
+ ##width =12, height =6)
 ```
