@@ -152,7 +152,11 @@ pHOrionData <- data.frame(DateTime = c(mdy_hm("03-18-2026 12:43","03-18-2026 20:
 ```
 
 ```{r}
- ggplot(pH_HOBO, aes(DateTime, pHT, group_by = "SensorNumber", color = SensorNumber)) +
+
+
+
+ 
+ggplot(pH_HOBO, aes(DateTime, pHT, group_by = "SensorNumber", color = SensorNumber)) +
   geom_point() +
  
    facet_wrap(~Location, scales = "free") +
@@ -168,17 +172,40 @@ pHOrionData <- data.frame(DateTime = c(mdy_hm("03-18-2026 12:43","03-18-2026 20:
 
 pHPlot <- ggplot(pH_HOBO, aes(DateTime, pH, group_by = "SensorNumber", color = SensorNumber)) +
   geom_point() +
+
+ 
   scale_x_datetime(date_breaks = "6 hours") +
-     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+     theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
  
 
   pHPlot <- pHP +  
-  geom_point(data =OrionData, color = "blue", size =2) +
-   facet_wrap(~Location, scales = "free") 
+  geom_point(data =OrionData, color = "blue", size =2) 
   pHPlot
   
    ggsave(here("Output","pHPlot_Hobos.png"), 
             width =12, height =6)
+```
+
+```{r}
+pH1 <- pH_HOBO %>% filter(SensorNumber == "22491059") %>% select(DateTime,Temperature, pHT) %>% rename(pH1 = pHT, Temp1 = Temperature) 
+pH2 <- pH_HOBO %>% filter(SensorNumber == "22491060") %>% select(DateTime,Temperature, pHT) %>% rename(pH2 = pHT, Temp2 = Temperature)
+pH3 <- pH_HOBO %>% filter(SensorNumber == "22491061") %>% select(DateTime,Temperature, pHT) %>% rename(pH3 = pHT, Temp3 = Temperature) 
+
+pH_Subtract <- pH1 %>% 
+  left_join(pH2, by = "DateTime") %>%
+  left_join(pH3, by = "DateTime")
+
+pH_Subtract <- pH_Subtract %>% mutate(pH12 = pH1 - pH2, pH13 = pH1 - pH3, pH23 = pH2 - pH3) %>% mutate(Temp12 = Temp1 - Temp2, Temp13 = Temp1 - Temp3, Temp23 = Temp2 - Temp3)
+
+ggplot(pH_Subtract) +
+  geom_point(aes(DateTime, pH12, color = "red")) +
+  geom_point(aes(DateTime, pH13, color = "blue")) +
+  geom_point(aes(DateTime, pH23, color = "green"))
+
+ggplot(pH_Subtract) +
+  geom_point(aes(DateTime, Temp12, color = "red")) +
+  geom_point(aes(DateTime, Temp13, color = "blue")) +
+  geom_point(aes(DateTime, Temp23, color = "green"))
 ```
 
 ```{r}
@@ -195,6 +222,20 @@ DO <- ggplot(CTDOData, aes(DateTime, SalinityAdjustedDO, group_by = "SensorNumbe
   ggsave(here("Output","DOPlot_Hobos_Orion.png"), 
             width =12, height =6)
 
+```
+
+```{r}
+DO1 <- CTDOData %>% filter(SensorNumber == "22482990") %>% select(DateTime,Temperature1, SalinityAdjustedDO) %>% rename(DO1 = SalinityAdjustedDO) 
+DO2 <- CTDOData %>% filter(SensorNumber == "22482291") %>% mutate(DateTime = DateTime + minutes(1)) %>% select(DateTime,Temperature2, SalinityAdjustedDO) %>% rename(DO2 = SalinityAdjustedDO)
+DO_Subtract <- left_join(DO1, DO2, by = "DateTime")
+
+DO_Subtract <- DO_Subtract %>% mutate(DO_dif = DO1 - DO2) %>% mutate(Temp_dif = Temperature1 - Temperature2)
+
+ggplot(DO_Subtract, aes(DateTime, DO_dif)) +
+  geom_point()
+
+ggplot(DO_Subtract, aes(DateTime, Temp_dif)) +
+  geom_point()
 ```
 
 ```{r}
