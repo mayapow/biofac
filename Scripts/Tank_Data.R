@@ -12,6 +12,12 @@ library(tidyverse)
 library(seacarb)
 library(broom)
 library(car)
+library(dplyr)
+
+#git pull
+#git add .
+#git commmit -a -m "your message here"
+#git push
 
 #read in data
 
@@ -33,26 +39,27 @@ td <- td %>%
 pHcalib <-read_csv(here("Data/Tank_Data/Tris_Calibration_HIMB.csv"))
 pHcalib <- pHcalib %>% mutate(tris_date = mdy(tris_date))
 pHData <- td %>% 
-  select(date, tris_date, tank, timepoint, time, temp, pH_meas, mV, sal, cond) #only selecting columns needed otherwise lots of NAs
+  dplyr::select(date, tris_date, tank, timepoint, time, temp, pH_meas, mV, sal, cond) 
+#only selecting needed columns otherwise lots of NAs
 
 #Take the mV calibration files by each date and use them to calculate pH using the seacarb package
 pHSlope <- pHcalib %>% 
   nest_by(tris_date) %>%
   mutate(fitpH = list(lm(mVTris~TTris, data = pHcalib))) %>% # linear regression of mV and temp of the tris
   reframe(broom::tidy(fitpH)) %>% # make the output tidy
-  select(tris_date, term, estimate) %>%
+  dplyr::select(tris_date, term, estimate) %>%
   pivot_wider(names_from = term, values_from = estimate) %>% # put slope and intercept in their own column
   left_join(pHData,., by = "tris_date") %>% # join with the pH sample data
   mutate(mVTris = temp*TTris + `(Intercept)`) %>% # calculate the mV of the tris at temperature in which the pH of samples were measured
   drop_na() %>%
   mutate(pHT = pH(Ex=mV,Etris=mVTris,S=sal,T=temp)) %>% # calculate pH of the samples using the pH seacarb function
-  select(date, tank, timepoint, pHT) # selects just these columns (whatever columns you want + pH)
+  dplyr::select(date, tank, timepoint, pHT) # selects just these columns (whatever columns you want + pH)
 
 #updating pH in the dataset with pHT
 tank_data <- left_join(td, pHSlope, by = c("date","tank","timepoint"))
 
 sump_data <- tank_data %>% filter(treatment == "sump") %>%
-  select(-sump) %>%
+  dplyr::select(-sump) %>%
   rename(sump = tank)
 
 #plot ALL data
@@ -540,6 +547,88 @@ dnsum_dif_plots
 
 ggsave(here("Output/mean_dif_treatment_day_night_plots.pdf"), dnsum_dif_plots, h = 10, w = 10)
 
+#differences between day and night
+day <- tank_data %>% 
+  filter(day_night == "day") %>%
+  drop_na(cond)
+
+night <- tank_data %>% 
+  filter(day_night == "night") %>%
+  filter(date != "2026-03-09") %>% #need to remove the 9th bc sumps were set up this day so official start on the 10th
+  drop_na(cond) %>%
+  dplyr::select(date, tank, timepoint, time, temp, pH_meas, mV, sal, cond, DO, pHT) %>%
+  rename(timepoint_night = timepoint,
+         time_night = time,
+         temp_night = temp, 
+         pHT_night = pHT, 
+         pH_meas_night = pH_meas,
+         mV_night = mV, 
+         sal_night = sal,
+         cond_night = cond,
+         DO_night = DO)
+
+day_night <- night %>% left_join(day, by = c("tank","date"))
+
+day_night <- day_night %>% 
+  mutate(temp_dif = temp - temp_night,
+         pHT_dif = pHT - pHT_night,
+         sal_dif = sal - sal_night,
+         cond_dif = cond - cond_night,
+         DO_dif = DO - DO_night
+  )
+
+day_night_summary <- day_night %>%
+  drop_na(temp) %>%
+  group_by(treatment) %>%
+  dplyr::summarize(mean_temp_dif = mean(temp_dif, na.rm = T),
+                   se_temp_dif = se(temp_dif),
+                   mean_pHT_dif = mean(pHT_dif,na.rm = T),
+                   se_pHT_dif = se(pHT_dif),
+                   mean_DO_dif = mean(DO_dif,na.rm = T),
+                   se_DO_dif = se(DO_dif),
+                   mean_sal_dif = mean(sal_dif,na.rm = T),
+                   se_sal_dif = se(sal_dif),
+                   mean_cond_dif = mean(cond_dif,na.rm = T),
+                   se_cond_dif = se(cond_dif),
+                   .groups = "drop")
+
+
+temp_dif_day_night <- ggplot(day_night_summary, aes(x = treatment, y = mean_temp_dif, color = treatment)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=mean_temp_dif+se_temp_dif, ymax= mean_temp_dif-se_temp_dif), alpha = 0.5)+
+  theme_bw(base_size = 20) +
+  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
+  theme(axis.text.x = element_text(angle = 90))
+
+pHT_dif_day_night <- ggplot(day_night_summary, aes(x = treatment, y = mean_pHT_dif, color = treatment)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=mean_pHT_dif+se_pHT_dif, ymax= mean_pHT_dif-se_pHT_dif), alpha = 0.5)+
+  theme_bw(base_size = 20) +
+  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
+  theme(axis.text.x = element_text(angle = 90))
+
+DO_dif_day_night <- ggplot(day_night_summary, aes(x = treatment, y = mean_DO_dif, color = treatment)) +
+  geom_point() +
+  #stat_summary(geom = "text", fun = max, vjust = -1, size = 8,
+  #             label = c("a", "ab", "b", "b", "a", "ab", "","","","","",""))+
+  geom_errorbar(aes(ymin=mean_DO_dif+se_DO_dif, ymax= mean_DO_dif-se_DO_dif), alpha = 0.5)+
+  theme_bw(base_size = 20) +
+  #ylim(0.1,0.65)+
+  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
+  theme(axis.text.x = element_text(angle = 90))
+
+sal_dif_day_night <- ggplot(day_night_summary, aes(x = treatment, y = mean_sal_dif, color = treatment)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=mean_sal_dif+se_sal_dif, ymax= mean_sal_dif-se_sal_dif), alpha = 0.5)+
+  theme_bw(base_size = 20) +
+  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red","black"))+
+  theme(axis.text.x = element_text(angle = 90))
+
+day_night_dif_plots <- ggarrange(pHT_dif_day_night, DO_dif_day_night, temp_dif_day_night, sal_dif_day_night, 
+                             common.legend = T, nrow = 2, ncol = 2)
+day_night_dif_plots
+
+ggsave(here("Output/mean_dif_tank_treatment_day_night_plots.pdf"), day_night_dif_plots, h = 10, w = 10)
 
 ####Stats
 
