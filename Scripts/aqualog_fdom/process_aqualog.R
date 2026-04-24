@@ -1,3 +1,9 @@
+##fDOM Processing
+##Claire Moreland-Ochoa
+
+library("here")
+library("eemR")
+library("tidyverse")
 
 # define base directory (only thing to change per project if needed)
 base_dir <- "Scripts/aqualog_fdom"
@@ -305,7 +311,7 @@ ggplot(night_core, aes(x = factor(date), y = Value, fill = treatment)) +
     fill = "Treatment") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave(here("Figures", "night_core_fdom.jpg"),
+ggsave(here("Output", "night_core_fdom.jpg"),
        height = 5, width = 10, units = "in")
 
 
@@ -326,6 +332,6 @@ ggplot(night_peaks, aes(x = factor(date), y = Value, fill = treatment)) +
     fill = "Treatment") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave(here("Figures", "night_peak_fdom.jpg"),
+ggsave(here("Output", "night_peak_fdom.jpg"),
        height = 6, width = 12, units = "in")
 

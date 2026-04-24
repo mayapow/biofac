@@ -1,0 +1,88 @@
+Reading data files in directory: Data/aqualog_fdom/run1
+Group001 Group002 Group003 
+      10       10       10 
+Reading in sample key
+Blanks detected in sample key = 3
+Total N samples = 30
+Total N groups = 3
+Total N blanks  = 3
+N samples in each group = 10
+N samples in last group = 10
+Absorbance files detected, including absorbance data and IFE correction
+writing out sample_sheet as: run1_sample_sheet.csv
+extracting EEM data from files
+[1] "Good. All SEM files exist."
+Absorbance (ABS) files detected, reading absorbance data
+calculating Raman Areas
+performing Inner Filter Correction
+performing Raman scaling
+performing Rayleigh scatter subtraction
+writing out cleaned EEM files to directory processed_data > processed_matrices
+calculating indices
+index calculated:  CobleA
+index calculated:  CobleB
+index calculated:  CobleC
+index calculated:  CobleM
+index calculated:  CobleT
+index calculated:  Fpeak
+index calculated:  Stedmon_D
+index calculated:  Optical_Brighteners
+index calculated:  dieselBandII
+index calculated:  Petroleum
+index calculated:  Lignin
+index calculated:  BIX
+index calculated:  HIX
+index calculated:  FI
+index calculated:  M_to_C
+index calculated:  JP5_empirical
+index calculated:  JP5_normalized
+index calculated:  Diesel_Chen
+writing out indices to processed_data > fDOM_indices_out.csv
+DONE: indices written out to run1_fDOM_indices_out.csv
+Extracted sample(s): Group001Sample0001BEM Group002Sample0001BEM Group003Sample0001BEM 
+[1] "Number of Blank groups = 3"
+[1] "writing blank plots to file blanks_run1.pdf"
+ [1] "Reading data files in directory: Data/aqualog_fdom/run1"                                
+ [2] "Group001 Group002 Group003 "                                                            
+ [3] "      10       10       10 "                                                            
+ [4] "Reading in sample key"                                                                  
+ [5] "Blanks detected in sample key = 3"                                                      
+ [6] "Total N samples = 30"                                                                   
+ [7] "Total N groups = 3"                                                                     
+ [8] "Total N blanks  = 3"                                                                    
+ [9] "N samples in each group = 10"                                                           
+[10] "N samples in last group = 10"                                                           
+[11] "Absorbance files detected, including absorbance data and IFE correction"                
+[12] "writing out sample_sheet as: run1_sample_sheet.csv"                                     
+[13] "extracting EEM data from files"                                                         
+[14] "[1] \"Good. All SEM files exist.\""                                                     
+[15] "Absorbance (ABS) files detected, reading absorbance data"                               
+[16] "calculating Raman Areas"                                                                
+[17] "performing Inner Filter Correction"                                                     
+[18] "performing Raman scaling"                                                               
+[19] "performing Rayleigh scatter subtraction"                                                
+[20] "writing out cleaned EEM files to directory processed_data > processed_matrices"         
+[21] "calculating indices"                                                                    
+[22] "index calculated:  CobleA"                                                              
+[23] "index calculated:  CobleB"                                                              
+[24] "index calculated:  CobleC"                                                              
+[25] "index calculated:  CobleM"                                                              
+[26] "index calculated:  CobleT"                                                              
+[27] "index calculated:  Fpeak"                                                               
+[28] "index calculated:  Stedmon_D"                                                           
+[29] "index calculated:  Optical_Brighteners"                                                 
+[30] "index calculated:  dieselBandII"                                                        
+[31] "index calculated:  Petroleum"                                                           
+[32] "index calculated:  Lignin"                                                              
+[33] "index calculated:  BIX"                                                                 
+[34] "index calculated:  HIX"                                                                 
+[35] "index calculated:  FI"                                                                  
+[36] "index calculated:  M_to_C"                                                              
+[37] "index calculated:  JP5_empirical"                                                       
+[38] "index calculated:  JP5_normalized"                                                      
+[39] "index calculated:  Diesel_Chen"                                                         
+[40] "writing out indices to processed_data > fDOM_indices_out.csv"                           
+[41] "DONE: indices written out to run1_fDOM_indices_out.csv"                                 
+[42] "Extracted sample(s): Group001Sample0001BEM Group002Sample0001BEM Group003Sample0001BEM "
+[43] "[1] \"Number of Blank groups = 3\""                                                     
+[44] "[1] \"writing blank plots to file blanks_run1.pdf\""                                    
