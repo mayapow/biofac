@@ -547,7 +547,8 @@ dnsum_dif_plots
 
 ggsave(here("Output/mean_dif_treatment_day_night_plots.pdf"), dnsum_dif_plots, h = 10, w = 10)
 
-#differences between day and night
+#differences between day and night in tanks and sump to compare!!
+
 day <- tank_data %>% 
   filter(day_night == "day") %>%
   drop_na(cond)
@@ -741,3 +742,75 @@ DO_night_dif_emm <- emmeans::emmeans(DO_night_dif_mod, ~ treatment)
 DO_night_dif_pairs <- pairs(DO_night_dif_emm)
 DO_night_dif_pairs #NO DIFFERENCES
 
+
+##differences between day and night within tanks and sumps
+#Dataset = day_night
+
+#pHT day comparisons
+pHT_mod <- lm(pHT_dif~treatment, data = day_night)
+Anova(pHT_mod)
+summary(pHT_mod)
+#check_model(DW.mod.spp)
+
+pHT_emm <- emmeans::emmeans(pHT_mod, ~ treatment)
+pHT_pairs <- pairs(pHT_emm)
+pHT_pairs
+#3SP dif than both fakes and sump
+#MONOA dif than both fakes and sump
+# contrast                    estimate      SE  df t.ratio p.value
+# 3SP - 6SP                    0.01173 0.00978 166   1.200  0.8935
+# 3SP - FAKEA (PCOM)           0.02888 0.01000 166   2.885  0.0655 .
+# 3SP - FAKEB (MCAP)           0.03396 0.00978 166   3.474  0.0114 *
+# 3SP - MONOA (PCOM)          -0.00544 0.00989 166  -0.550  0.9980
+# 3SP - MONOB (MCAP)           0.00595 0.00967 166   0.615  0.9963
+# 3SP - sump                   0.02452 0.00883 166   2.777  0.0866 .
+# 6SP - FAKEA (PCOM)           0.01715 0.01010 166   1.696  0.6195
+# 6SP - FAKEB (MCAP)           0.02224 0.00988 166   2.251  0.2746
+# 6SP - MONOA (PCOM)          -0.01717 0.00999 166  -1.718  0.6047
+# 6SP - MONOB (MCAP)          -0.00578 0.00978 166  -0.591  0.9970
+# 6SP - sump                   0.01279 0.00894 166   1.430  0.7848
+# FAKEA (PCOM) - FAKEB (MCAP)  0.00508 0.01010 166   0.503  0.9988
+# FAKEA (PCOM) - MONOA (PCOM) -0.03432 0.01020 166  -3.358  0.0166 *
+# FAKEA (PCOM) - MONOB (MCAP) -0.02293 0.01000 166  -2.291  0.2548
+# FAKEA (PCOM) - sump         -0.00436 0.00920 166  -0.474  0.9991
+# FAKEB (MCAP) - MONOA (PCOM) -0.03941 0.00999 166  -3.944  0.0022 **
+# FAKEB (MCAP) - MONOB (MCAP) -0.02802 0.00978 166  -2.866  0.0689 .
+# FAKEB (MCAP) - sump         -0.00945 0.00894 166  -1.056  0.9397
+# MONOA (PCOM) - MONOB (MCAP)  0.01139 0.00989 166   1.152  0.9108
+# MONOA (PCOM) - sump          0.02996 0.00907 166   3.304  0.0196 *
+# MONOB (MCAP) - sump          0.01857 0.00883 166   2.103  0.3557
+
+#DO comparisons
+DO_mod <- lm(DO_dif~treatment, data = day_night)
+Anova(DO_mod)
+summary(DO_mod)
+#check_model(DW.mod.spp)
+
+DO_emm <- emmeans::emmeans(DO_mod, ~ treatment)
+DO_pairs <- pairs(DO_emm)
+DO_pairs
+#3SP dif than both fakes and sump
+#6SP dif than both fakes and sump
+#MONOA dif than both fakes and sump
+# contrast                    estimate     SE  df t.ratio p.value
+# 3SP - 6SP                    0.02435 0.0778 166   0.313  0.9999 
+# 3SP - FAKEA (PCOM)           0.28762 0.0796 166   3.612  0.0072 **
+# 3SP - FAKEB (MCAP)           0.24087 0.0778 166   3.098  0.0364 *
+# 3SP - MONOA (PCOM)           0.02091 0.0786 166   0.266  1.0000
+# 3SP - MONOB (MCAP)           0.15792 0.0769 166   2.053  0.3857
+# 3SP - sump                   0.33778 0.0702 166   4.810 <0.0001 ***
+# 6SP - FAKEA (PCOM)           0.26327 0.0804 166   3.274  0.0216 *
+# 6SP - FAKEB (MCAP)           0.21652 0.0786 166   2.756  0.0913 .
+# 6SP - MONOA (PCOM)          -0.00344 0.0795 166  -0.043  1.0000
+# 6SP - MONOB (MCAP)           0.13357 0.0778 166   1.718  0.6051
+# 6SP - sump                   0.31343 0.0711 166   4.407  0.0004 ***
+# FAKEA (PCOM) - FAKEB (MCAP) -0.04675 0.0804 166  -0.581  0.9973
+# FAKEA (PCOM) - MONOA (PCOM) -0.26671 0.0813 166  -3.281  0.0211 *
+# FAKEA (PCOM) - MONOB (MCAP) -0.12970 0.0796 166  -1.629  0.6638
+# FAKEA (PCOM) - sump          0.05016 0.0732 166   0.686  0.9932
+# FAKEB (MCAP) - MONOA (PCOM) -0.21996 0.0795 166  -2.768  0.0885 .
+# FAKEB (MCAP) - MONOB (MCAP) -0.08295 0.0778 166  -1.067  0.9368
+# FAKEB (MCAP) - sump          0.09691 0.0711 166   1.362  0.8208
+# MONOA (PCOM) - MONOB (MCAP)  0.13701 0.0786 166   1.742  0.5889
+# MONOA (PCOM) - sump          0.31687 0.0721 166   4.394  0.0004 ***
+# MONOB (MCAP) - sump          0.17986 0.0702 166   2.561  0.1449
