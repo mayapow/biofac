@@ -46,6 +46,18 @@ run5 <- process_aqualog(
   sample_key_file = "SampleDataSheet.txt"
 )
 
+run6 <- process_aqualog(
+  data_directory = file.path(base_dir_data, "run6"),
+  run_name = "run6",
+  sample_key_file = "SampleDataSheet.txt"
+)
+
+run7 <- process_aqualog(
+  data_directory = file.path(base_dir_data, "run7"),
+  run_name = "run7",
+  sample_key_file = "SampleDataSheet.txt"
+)
+
 # re-run with custom org sheet if needed to fix blank assignments
 # uncomment only if needed
 
@@ -97,21 +109,6 @@ compiled <- compile_runs(
   run_dirs = file.path(base_dir_data, run_dirs),
   out_dir = file.path(base_dir_data, "compiled_runs")
 )
-
-# plot the first EEMs for checks and giggles
-plot_eem(run1$EEMs[[1]], rows_as_names = T, 
-         sample_name = names(run1$EEMs)[1])
-
-plot_eem(run1$EEMs[[2]], rows_as_names = T, 
-         sample_name = names(run1$EEMs)[2])
-
-
-# check some indices (should have mostly normal distributions)
-# if something is weird, first check that blanks are clear
-
-hist(run1$indices$CobleA, breaks = 15)
-hist(run1$indices$M_to_C, breaks = 15)
-hist(run1$indices$CobleT, breaks = 15)
 
 
 # fDOM INDICES – quick reference / what these actually mean
@@ -186,10 +183,7 @@ hist(run1$indices$CobleT, breaks = 15)
 # plots are of FI, Fpeak, CobleB, CobleA, CobleT, M_to_C
 #these inidces were recommended by Zach Quinlan as the ones to focus on 
 
-library(dplyr)
 library(tidyr)
-library(ggplot2)
-library(here)
 
 indices <- read.csv(file.path(base_dir_data, "compiled_runs", "all_sample_indices.csv"))
 

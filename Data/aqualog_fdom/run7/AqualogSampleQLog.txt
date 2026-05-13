@@ -1,0 +1,128 @@
+##########################################################################################
+Log File: C:\Users\Public\Documents\Aqualog\Data\Donahue\biofac\run7\AqualogSampleQLog.txt
+Date: Thursday, May 07, 2026
+Time: 8:57:22 AM
+##########################################################################################
+[2026-05-07 08-57-22] 
+Aqualog Sample Q Experimental Parameters:
+[Aqualog Sample Q File] C:\Users\Public\Documents\Aqualog\Data\Donahue\biofac\run7\AqualogSampleQ.aqu
+[Aqualog Experiment File] C:\Users\Public\Documents\Aqualog\Data\Donahue\biofac\Donahue.AqualogSampleQ.Setup.xml
+[Output Destination Folder] C:\Users\Public\Documents\Aqualog\Data\Donahue\biofac\run7\
+
+Output File Names:
+[Blank Group Prefix] Group
+[Blank File Base] Blank
+[Sample Prefix] Sample
+
+Blank & Sample Setup:
+[Blank Group Count] 9
+[Blank Group Start] 1
+[Samples Per Blank] 10
+[Blank Group Start] 1
+[Total Number of Blanks & Samples] 99
+
+Post Prossessing Options:
+
+Export Options:
+ASCII = True
+ABS = True
+BEM = True
+SEM = True
+
+Delay Options:
+Single Cell Kinetics = False
+Delay Before First Blank = 0 Seconds
+Delay Between Each Experiment = 0 Seconds
+
+Starting (Run/Resume) Position:
+[Blank Start Index] 0
+[Sample Start Index] 0
+################################################################################
+[2026-05-07 08-57-22] STARTING Aqualog SampleQ Execution
+[2026-05-07 08-57-39] Experiment 01 of 99 [Blank 000, Sample 0000] [Files: Group001Blank*] Start Done
+[2026-05-07 09-01-37] Experiment 02 of 99 [Blank 000, Sample 0001] [Files: Group001Sample0001*] Start Done
+[2026-05-07 09-05-56] Experiment 03 of 99 [Blank 000, Sample 0002] [Files: Group001Sample0002*] Start Done
+[2026-05-07 09-09-57] Experiment 04 of 99 [Blank 000, Sample 0003] [Files: Group001Sample0003*] Start Done
+[2026-05-07 09-14-18] Experiment 05 of 99 [Blank 000, Sample 0004] [Files: Group001Sample0004*] Start Done
+[2026-05-07 09-18-19] Experiment 06 of 99 [Blank 000, Sample 0005] [Files: Group001Sample0005*] Start Done
+[2026-05-07 09-22-38] Experiment 07 of 99 [Blank 000, Sample 0006] [Files: Group001Sample0006*] Start Done
+[2026-05-07 09-26-39] Experiment 08 of 99 [Blank 000, Sample 0007] [Files: Group001Sample0007*] Start Done
+[2026-05-07 09-31-05] Experiment 09 of 99 [Blank 000, Sample 0008] [Files: Group001Sample0008*] Start Done
+[2026-05-07 09-35-06] Experiment 10 of 99 [Blank 000, Sample 0009] [Files: Group001Sample0009*] Start Done
+[2026-05-07 09-39-25] Experiment 11 of 99 [Blank 000, Sample 0010] [Files: Group001Sample0010*] Start Done
+[2026-05-07 09-43-26] Experiment 12 of 99 [Blank 001, Sample 0000] [Files: Group002Blank*] Start Done
+[2026-05-07 09-47-46] Experiment 13 of 99 [Blank 001, Sample 0001] [Files: Group002Sample0001*] Start Done
+[2026-05-07 09-51-46] Experiment 14 of 99 [Blank 001, Sample 0002] [Files: Group002Sample0002*] Start Done
+[2026-05-07 09-56-09] Experiment 15 of 99 [Blank 001, Sample 0003] [Files: Group002Sample0003*] Start Done
+[2026-05-07 10-00-10] Experiment 16 of 99 [Blank 001, Sample 0004] [Files: Group002Sample0004*] Start Done
+[2026-05-07 10-04-31] Experiment 17 of 99 [Blank 001, Sample 0005] [Files: Group002Sample0005*] Start Done
+[2026-05-07 10-08-32] Experiment 18 of 99 [Blank 001, Sample 0006] [Files: Group002Sample0006*] Start Done
+[2026-05-07 10-12-57] Experiment 19 of 99 [Blank 001, Sample 0007] [Files: Group002Sample0007*] Start Done
+[2026-05-07 10-16-58] Experiment 20 of 99 [Blank 001, Sample 0008] [Files: Group002Sample0008*] Start Done
+[2026-05-07 10-21-22] Experiment 21 of 99 [Blank 001, Sample 0009] [Files: Group002Sample0009*] Start Done
+[2026-05-07 10-25-23] Experiment 22 of 99 [Blank 001, Sample 0010] [Files: Group002Sample0010*] Start Done
+[2026-05-07 10-29-58] Experiment 23 of 99 [Blank 002, Sample 0000] [Files: Group003Blank*] Start Done
+[2026-05-07 10-33-56] Experiment 24 of 99 [Blank 002, Sample 0001] [Files: Group003Sample0001*] Start Done
+[2026-05-07 10-38-21] Experiment 25 of 99 [Blank 002, Sample 0002] [Files: Group003Sample0002*] Start Done
+[2026-05-07 10-42-21] Experiment 26 of 99 [Blank 002, Sample 0003] [Files: Group003Sample0003*] Start Done
+[2026-05-07 10-46-44] Experiment 27 of 99 [Blank 002, Sample 0004] [Files: Group003Sample0004*] Start Done
+[2026-05-07 10-50-45] Experiment 28 of 99 [Blank 002, Sample 0005] [Files: Group003Sample0005*] Start Done
+[2026-05-07 10-55-13] Experiment 29 of 99 [Blank 002, Sample 0006] [Files: Group003Sample0006*] Start Done
+[2026-05-07 10-59-13] Experiment 30 of 99 [Blank 002, Sample 0007] [Files: Group003Sample0007*] Start Done
+[2026-05-07 11-03-41] Experiment 31 of 99 [Blank 002, Sample 0008] [Files: Group003Sample0008*] Start Done
+[2026-05-07 11-07-42] Experiment 32 of 99 [Blank 002, Sample 0009] [Files: Group003Sample0009*] Start Done
+[2026-05-07 11-12-15] Experiment 33 of 99 [Blank 002, Sample 0010] [Files: Group003Sample0010*] Start Done
+[2026-05-07 11-16-16] Experiment 34 of 99 [Blank 003, Sample 0000] [Files: Group004Blank*] Start Done
+[2026-05-07 11-22-36] Experiment 35 of 99 [Blank 003, Sample 0001] [Files: Group004Sample0001*] Start Done
+[2026-05-07 11-26-42] Experiment 36 of 99 [Blank 003, Sample 0002] [Files: Group004Sample0002*] Start Done
+[2026-05-07 11-32-18] Experiment 37 of 99 [Blank 003, Sample 0003] [Files: Group004Sample0003*] Start Done
+[2026-05-07 11-36-24] Experiment 38 of 99 [Blank 003, Sample 0004] [Files: Group004Sample0004*] Start Done
+[2026-05-07 11-40-55] Experiment 39 of 99 [Blank 003, Sample 0005] [Files: Group004Sample0005*] Start Done
+[2026-05-07 11-45-01] Experiment 40 of 99 [Blank 003, Sample 0006] [Files: Group004Sample0006*] Start Done
+[2026-05-07 11-49-28] Experiment 41 of 99 [Blank 003, Sample 0007] [Files: Group004Sample0007*] Start Done
+[2026-05-07 11-53-34] Experiment 42 of 99 [Blank 003, Sample 0008] [Files: Group004Sample0008*] Start Done
+[2026-05-07 11-58-00] Experiment 43 of 99 [Blank 003, Sample 0009] [Files: Group004Sample0009*] Start Done
+[2026-05-07 12-02-06] Experiment 44 of 99 [Blank 003, Sample 0010] [Files: Group004Sample0010*] Start Done
+[2026-05-07 12-06-34] Experiment 45 of 99 [Blank 004, Sample 0000] [Files: Group005Blank*] Start Done
+[2026-05-07 12-10-34] Experiment 46 of 99 [Blank 004, Sample 0001] [Files: Group005Sample0001*] Start Done
+[2026-05-07 12-15-00] Experiment 47 of 99 [Blank 004, Sample 0002] [Files: Group005Sample0002*] Start Done
+[2026-05-07 12-19-06] Experiment 48 of 99 [Blank 004, Sample 0003] [Files: Group005Sample0003*] Start Done
+[2026-05-07 12-23-38] Experiment 49 of 99 [Blank 004, Sample 0004] [Files: Group005Sample0004*] Start Done
+[2026-05-07 12-27-44] Experiment 50 of 99 [Blank 004, Sample 0005] [Files: Group005Sample0005*] Start Done
+[2026-05-07 12-32-15] Experiment 51 of 99 [Blank 004, Sample 0006] [Files: Group005Sample0006*] Start Done
+[2026-05-07 12-36-22] Experiment 52 of 99 [Blank 004, Sample 0007] [Files: Group005Sample0007*] Start Done
+[2026-05-07 12-41-56] Experiment 53 of 99 [Blank 004, Sample 0008] [Files: Group005Sample0008*] Start Done
+[2026-05-07 12-46-02] Experiment 54 of 99 [Blank 004, Sample 0009] [Files: Group005Sample0009*] Start Done
+[2026-05-07 12-50-34] Experiment 55 of 99 [Blank 004, Sample 0010] [Files: Group005Sample0010*] Start Done
+[2026-05-07 12-54-41] Experiment 56 of 99 [Blank 005, Sample 0000] [Files: Group006Blank*] Start Done
+[2026-05-07 13-02-12] Experiment 57 of 99 [Blank 005, Sample 0001] [Files: Group006Sample0001*] Start Done
+[2026-05-07 13-06-18] Experiment 58 of 99 [Blank 005, Sample 0002] [Files: Group006Sample0002*] Start Done
+[2026-05-07 13-10-49] Experiment 59 of 99 [Blank 005, Sample 0003] [Files: Group006Sample0003*] Start Done
+[2026-05-07 13-14-55] Experiment 60 of 99 [Blank 005, Sample 0004] [Files: Group006Sample0004*] Start Done
+[2026-05-07 13-19-25] Experiment 61 of 99 [Blank 005, Sample 0005] [Files: Group006Sample0005*] Start Done
+[2026-05-07 13-23-31] Experiment 62 of 99 [Blank 005, Sample 0006] [Files: Group006Sample0006*] Start Done
+[2026-05-07 13-29-12] Experiment 63 of 99 [Blank 005, Sample 0007] [Files: Group006Sample0007*] Start Done
+[2026-05-07 13-33-18] Experiment 64 of 99 [Blank 005, Sample 0008] [Files: Group006Sample0008*] Start Done
+[2026-05-07 13-37-47] Experiment 65 of 99 [Blank 005, Sample 0009] [Files: Group006Sample0009*] Start Done
+[2026-05-07 13-41-53] Experiment 66 of 99 [Blank 005, Sample 0010] [Files: Group006Sample0010*] Start Done
+[2026-05-07 13-47-13] Experiment 67 of 99 [Blank 006, Sample 0000] [Files: Group007Blank*] Start Done
+[2026-05-07 13-51-13] Experiment 68 of 99 [Blank 006, Sample 0001] [Files: Group007Sample0001*] Start Done
+[2026-05-07 13-57-02] Experiment 69 of 99 [Blank 006, Sample 0002] [Files: Group007Sample0002*] Start Done
+[2026-05-07 14-01-09] Experiment 70 of 99 [Blank 006, Sample 0003] [Files: Group007Sample0003*] Start Done
+[2026-05-07 14-07-25] Experiment 71 of 99 [Blank 006, Sample 0004] [Files: Group007Sample0004*] Start Done
+[2026-05-07 14-11-31] Experiment 72 of 99 [Blank 006, Sample 0005] [Files: Group007Sample0005*] Start Done
+[2026-05-07 14-16-15] Experiment 73 of 99 [Blank 006, Sample 0006] [Files: Group007Sample0006*] Start Done
+[2026-05-07 14-20-21] Experiment 74 of 99 [Blank 006, Sample 0007] [Files: Group007Sample0007*] Start Done
+[2026-05-07 14-24-47] Experiment 75 of 99 [Blank 006, Sample 0008] [Files: Group007Sample0008*] Start Done
+[2026-05-07 14-28-53] Experiment 76 of 99 [Blank 006, Sample 0009] [Files: Group007Sample0009*] Start Done
+[2026-05-07 14-34-08] Experiment 77 of 99 [Blank 006, Sample 0010] [Files: Group007Sample0010*] Start Done
+[2026-05-07 14-38-15] Experiment 78 of 99 [Blank 007, Sample 0000] [Files: Group008Blank*] Start Done
+[2026-05-07 14-42-34] Experiment 79 of 99 [Blank 007, Sample 0001] [Files: Group008Sample0001*] Start Done
+[2026-05-07 14-46-40] Experiment 80 of 99 [Blank 007, Sample 0002] [Files: Group008Sample0002*] Start Done
+[2026-05-07 14-51-04] Experiment 81 of 99 [Blank 007, Sample 0003] [Files: Group008Sample0003*] Start Done
+[2026-05-07 14-55-11] Experiment 82 of 99 [Blank 007, Sample 0004] [Files: Group008Sample0004*] Start Done
+[2026-05-07 14-59-38] Experiment 83 of 99 [Blank 007, Sample 0005] [Files: Group008Sample0005*] Start Done
+[2026-05-07 15-03-45] Experiment 84 of 99 [Blank 007, Sample 0006] [Files: Group008Sample0006*] Start Done
+[2026-05-07 15-08-07] Experiment 85 of 99 [Blank 007, Sample 0007] [Files: Group008Sample0007*] Start Done
+[2026-05-07 15-12-14] Experiment 86 of 99 [Blank 007, Sample 0008] [Files: Group008Sample0008*] Start Done
+[2026-05-07 15-16-19] USER CANCELED Aqualog SampleQ Execution
