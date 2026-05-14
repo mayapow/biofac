@@ -58,6 +58,12 @@ run7 <- process_aqualog(
   sample_key_file = "SampleDataSheet.txt"
 )
 
+run8 <- process_aqualog(
+  data_directory = file.path(base_dir_data, "run8"),
+  run_name = "run8",
+  sample_key_file = "SampleDataSheet.txt"
+)
+
 # re-run with custom org sheet if needed to fix blank assignments
 # uncomment only if needed
 
@@ -94,6 +100,13 @@ run5 <- process_aqualog(
   run_name = "run5",
   sample_key_file = "SampleDataSheet.txt",
   org_file = "processed_data/run5_sample_sheet_clean.csv"
+)
+
+run8 <- process_aqualog(
+  data_directory = file.path(base_dir_data, "run8"),
+  run_name = "run8",
+  sample_key_file = "SampleDataSheet.txt",
+  org_file = "processed_data/run8_sample_sheet_clean.csv"
 )
 
 # automatically grab all run folders
@@ -215,7 +228,7 @@ fullday_long <- fullday_data %>%
    )
  
 ggplot(fullday_long, aes(x = timepoint_f, y = Value, fill = treatment)) +
-   geom_boxplot() +
+   geom_boxplot(alpha = 0.7,outlier.size = 1) +
    facet_wrap(~Index, scales = "free_y") +
    theme_bw() +
    scale_fill_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
@@ -228,7 +241,39 @@ ggplot(fullday_long, aes(x = timepoint_f, y = Value, fill = treatment)) +
 ggsave(here("Output", "fullday_fdom.jpg"),
        height = 5, width = 10, units = "in")
  
+outliers_fullday_long <- fullday_long %>%
+  group_by(Index) %>%
+  mutate(
+    Q1 = quantile(Value, 0.25, na.rm = TRUE),
+    Q3 = quantile(Value, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    lower = Q1 - 1.5 * IQR,
+    upper = Q3 + 1.5 * IQR,
+    is_outlier = Value < lower | Value > upper
+  ) %>%
+  ungroup() %>%
+  filter(is_outlier) %>%
+  mutate(source = "fullday")
+
+outlier_fullday_summary <- outliers_fullday_long %>%
+  group_by(UniqueID) %>%
+  summarise(
+    n_outlier_rows = n(),
+    indices = paste(unique(Index), collapse = ", "),
+    sources = paste(unique(source), collapse = ", "),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    qc_flag = case_when(
+      n_outlier_rows >= 4 ~ "Strong QA/QC flag — inspect raw EEM and consider rerun",
+      n_outlier_rows == 3 ~ "Inspect raw EEM and compare with related samples",
+      n_outlier_rows == 2 ~ "Moderate deviation — likely biological but worth reviewing",
+      TRUE ~ "Minor deviation — likely normal variability"
+    )
+  ) %>%
+  arrange(desc(n_outlier_rows))
  
+#Weekly data
 main_data <- data %>%
    filter(date != as.Date("2026-04-06"),
           date != as.Date("2026-04-07")) 
@@ -252,7 +297,7 @@ day_core <- day_data %>%
   filter(Index %in% c("FI", "M_to_C"))
 
 ggplot(day_core, aes(x = factor(date), y = Value, fill = treatment)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_boxplot( alpha = 0.7,outlier.size = 1) +
   facet_wrap(~Index, scales = "free_y") +
   theme_bw() +
   scale_fill_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
@@ -266,6 +311,17 @@ ggplot(day_core, aes(x = factor(date), y = Value, fill = treatment)) +
 ggsave(here("Output", "day_core_fdom.jpg"),
        height = 5, width = 10, units = "in")
 
+outliers_day_core <- day_core %>%
+  group_by(Index) %>%
+  mutate(
+    Q1 = quantile(Value, 0.25, na.rm = TRUE),
+    Q3 = quantile(Value, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    lower = Q1 - 1.5 * IQR,
+    upper = Q3 + 1.5 * IQR,
+    is_outlier = Value < lower | Value > upper
+  ) %>%
+  filter(is_outlier)
 
 # DAY — peak structure
 
@@ -273,7 +329,7 @@ day_peaks <- day_data %>%
   filter(Index %in% c("CobleA", "CobleB", "CobleT", "Fpeak"))
 
 ggplot(day_peaks, aes(x = factor(date), y = Value, fill = treatment)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_boxplot(alpha = 0.7,outlier.size = 1) +
   facet_wrap(~Index, scales = "free_y") +
   theme_bw() +
   scale_fill_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
@@ -287,6 +343,17 @@ ggplot(day_peaks, aes(x = factor(date), y = Value, fill = treatment)) +
 ggsave(here("Output", "day_peak_fdom.jpg"),
        height = 6, width = 12, units = "in")
 
+outliers_day_peaks <- day_peaks %>%
+  group_by(Index) %>%
+  mutate(
+    Q1 = quantile(Value, 0.25, na.rm = TRUE),
+    Q3 = quantile(Value, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    lower = Q1 - 1.5 * IQR,
+    upper = Q3 + 1.5 * IQR,
+    is_outlier = Value < lower | Value > upper
+  ) %>%
+  filter(is_outlier)
 
 # NIGHT — core characterization
 
@@ -294,7 +361,7 @@ night_core <- night_data %>%
   filter(Index %in% c("FI", "M_to_C"))
 
 ggplot(night_core, aes(x = factor(date), y = Value, fill = treatment)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_boxplot( alpha = 0.7,outlier.size = 1) +
   facet_wrap(~Index, scales = "free_y") +
   theme_bw() +
   scale_fill_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
@@ -308,6 +375,17 @@ ggplot(night_core, aes(x = factor(date), y = Value, fill = treatment)) +
 ggsave(here("Output", "night_core_fdom.jpg"),
        height = 5, width = 10, units = "in")
 
+outliers_night_core <- night_core %>%
+  group_by(Index) %>%
+  mutate(
+    Q1 = quantile(Value, 0.25, na.rm = TRUE),
+    Q3 = quantile(Value, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    lower = Q1 - 1.5 * IQR,
+    upper = Q3 + 1.5 * IQR,
+    is_outlier = Value < lower | Value > upper
+  ) %>%
+  filter(is_outlier)
 
 # NIGHT — peak structure
 
@@ -315,7 +393,7 @@ night_peaks <- night_data %>%
   filter(Index %in% c("CobleA", "CobleB", "CobleT", "Fpeak"))
 
 ggplot(night_peaks, aes(x = factor(date), y = Value, fill = treatment)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_boxplot( alpha = 0.7,outlier.size = 1) +
   facet_wrap(~Index, scales = "free_y") +
   theme_bw() +
   scale_fill_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
@@ -329,3 +407,53 @@ ggplot(night_peaks, aes(x = factor(date), y = Value, fill = treatment)) +
 ggsave(here("Output", "night_peak_fdom.jpg"),
        height = 6, width = 12, units = "in")
 
+outliers_night_peaks <- night_peaks %>%
+  group_by(Index) %>%
+  mutate(
+    Q1 = quantile(Value, 0.25, na.rm = TRUE),
+    Q3 = quantile(Value, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    lower = Q1 - 1.5 * IQR,
+    upper = Q3 + 1.5 * IQR,
+    is_outlier = Value < lower | Value > upper
+  ) %>%
+  filter(is_outlier)
+
+outliers_day_core$source <- "day_core"
+outliers_day_peaks$source <- "day_peak"
+outliers_night_core$source <- "night_core"
+outliers_night_peaks$source <- "night_peak"
+
+all_outliers <- bind_rows(
+  outliers_day_core,
+  outliers_day_peaks,
+  outliers_night_core,
+  outliers_night_peaks
+)
+
+all_outliers %>%
+  group_by(UniqueID) %>%
+  summarise(
+    n_outlier_flags = n(),
+    indices = paste(unique(Index), collapse = ", "),
+    sources = paste(unique(source), collapse = ", ")
+  ) %>%
+  arrange(desc(n_outlier_flags))
+
+outlier_summary <- all_outliers %>%
+  group_by(UniqueID) %>%
+  summarise(
+    n_outlier_rows = n(),
+    indices = paste(unique(Index), collapse = ", "),
+    sources = paste(unique(source), collapse = ", "),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    qc_flag = case_when(
+      n_outlier_rows >= 4 ~ "Strong QA/QC flag — inspect raw EEM and consider rerun",
+      n_outlier_rows == 3 ~ "Inspect raw EEM and compare with related samples",
+      n_outlier_rows == 2 ~ "Moderate deviation — likely biological but worth reviewing",
+      TRUE ~ "Minor deviation — likely normal variability"
+    )
+  ) %>%
+  arrange(desc(n_outlier_rows))
