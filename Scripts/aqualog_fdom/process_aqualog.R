@@ -241,6 +241,8 @@ ggplot(fullday_long, aes(x = timepoint_f, y = Value, fill = treatment)) +
 ggsave(here("Output", "fullday_fdom.jpg"),
        height = 5, width = 10, units = "in")
  
+#Fullday Outliers 
+
 outliers_fullday_long <- fullday_long %>%
   group_by(Index) %>%
   mutate(
@@ -256,11 +258,10 @@ outliers_fullday_long <- fullday_long %>%
   mutate(source = "fullday")
 
 outlier_fullday_summary <- outliers_fullday_long %>%
-  group_by(UniqueID) %>%
+  group_by(timepoint_f, timepoint, UniqueID) %>%
   summarise(
     n_outlier_rows = n(),
     indices = paste(unique(Index), collapse = ", "),
-    sources = paste(unique(source), collapse = ", "),
     .groups = "drop"
   ) %>%
   mutate(
@@ -271,7 +272,7 @@ outlier_fullday_summary <- outliers_fullday_long %>%
       TRUE ~ "Minor deviation — likely normal variability"
     )
   ) %>%
-  arrange(desc(n_outlier_rows))
+  arrange(timepoint, desc(n_outlier_rows))
  
 #Weekly data
 main_data <- data %>%
@@ -311,17 +312,6 @@ ggplot(day_core, aes(x = factor(date), y = Value, fill = treatment)) +
 ggsave(here("Output", "day_core_fdom.jpg"),
        height = 5, width = 10, units = "in")
 
-outliers_day_core <- day_core %>%
-  group_by(Index) %>%
-  mutate(
-    Q1 = quantile(Value, 0.25, na.rm = TRUE),
-    Q3 = quantile(Value, 0.75, na.rm = TRUE),
-    IQR = Q3 - Q1,
-    lower = Q1 - 1.5 * IQR,
-    upper = Q3 + 1.5 * IQR,
-    is_outlier = Value < lower | Value > upper
-  ) %>%
-  filter(is_outlier)
 
 # DAY — peak structure
 
@@ -343,18 +333,6 @@ ggplot(day_peaks, aes(x = factor(date), y = Value, fill = treatment)) +
 ggsave(here("Output", "day_peak_fdom.jpg"),
        height = 6, width = 12, units = "in")
 
-outliers_day_peaks <- day_peaks %>%
-  group_by(Index) %>%
-  mutate(
-    Q1 = quantile(Value, 0.25, na.rm = TRUE),
-    Q3 = quantile(Value, 0.75, na.rm = TRUE),
-    IQR = Q3 - Q1,
-    lower = Q1 - 1.5 * IQR,
-    upper = Q3 + 1.5 * IQR,
-    is_outlier = Value < lower | Value > upper
-  ) %>%
-  filter(is_outlier)
-
 # NIGHT — core characterization
 
 night_core <- night_data %>%
@@ -375,18 +353,6 @@ ggplot(night_core, aes(x = factor(date), y = Value, fill = treatment)) +
 ggsave(here("Output", "night_core_fdom.jpg"),
        height = 5, width = 10, units = "in")
 
-outliers_night_core <- night_core %>%
-  group_by(Index) %>%
-  mutate(
-    Q1 = quantile(Value, 0.25, na.rm = TRUE),
-    Q3 = quantile(Value, 0.75, na.rm = TRUE),
-    IQR = Q3 - Q1,
-    lower = Q1 - 1.5 * IQR,
-    upper = Q3 + 1.5 * IQR,
-    is_outlier = Value < lower | Value > upper
-  ) %>%
-  filter(is_outlier)
-
 # NIGHT — peak structure
 
 night_peaks <- night_data %>%
@@ -406,6 +372,45 @@ ggplot(night_peaks, aes(x = factor(date), y = Value, fill = treatment)) +
 
 ggsave(here("Output", "night_peak_fdom.jpg"),
        height = 6, width = 12, units = "in")
+
+#Weekly Data Outliers
+
+outliers_day_core <- day_core %>%
+  group_by(Index) %>%
+  mutate(
+    Q1 = quantile(Value, 0.25, na.rm = TRUE),
+    Q3 = quantile(Value, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    lower = Q1 - 1.5 * IQR,
+    upper = Q3 + 1.5 * IQR,
+    is_outlier = Value < lower | Value > upper
+  ) %>%
+  filter(is_outlier)
+
+outliers_day_peaks <- day_peaks %>%
+  group_by(Index) %>%
+  mutate(
+    Q1 = quantile(Value, 0.25, na.rm = TRUE),
+    Q3 = quantile(Value, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    lower = Q1 - 1.5 * IQR,
+    upper = Q3 + 1.5 * IQR,
+    is_outlier = Value < lower | Value > upper
+  ) %>%
+  filter(is_outlier)
+
+
+outliers_night_core <- night_core %>%
+  group_by(Index) %>%
+  mutate(
+    Q1 = quantile(Value, 0.25, na.rm = TRUE),
+    Q3 = quantile(Value, 0.75, na.rm = TRUE),
+    IQR = Q3 - Q1,
+    lower = Q1 - 1.5 * IQR,
+    upper = Q3 + 1.5 * IQR,
+    is_outlier = Value < lower | Value > upper
+  ) %>%
+  filter(is_outlier)
 
 outliers_night_peaks <- night_peaks %>%
   group_by(Index) %>%
@@ -429,19 +434,16 @@ all_outliers <- bind_rows(
   outliers_day_peaks,
   outliers_night_core,
   outliers_night_peaks
-)
+) %>%
+  mutate(
+    sample_period = case_when(
+      grepl("^day", source) ~ "day",
+      grepl("^night", source) ~ "night"
+    )
+  )
 
-all_outliers %>%
-  group_by(UniqueID) %>%
-  summarise(
-    n_outlier_flags = n(),
-    indices = paste(unique(Index), collapse = ", "),
-    sources = paste(unique(source), collapse = ", ")
-  ) %>%
-  arrange(desc(n_outlier_flags))
-
-outlier_summary <- all_outliers %>%
-  group_by(UniqueID) %>%
+outlier_weekly_summary <- all_outliers %>%
+  group_by(sample_period, UniqueID) %>%
   summarise(
     n_outlier_rows = n(),
     indices = paste(unique(Index), collapse = ", "),
@@ -456,4 +458,4 @@ outlier_summary <- all_outliers %>%
       TRUE ~ "Minor deviation — likely normal variability"
     )
   ) %>%
-  arrange(desc(n_outlier_rows))
+  arrange(sample_period, desc(n_outlier_rows))
