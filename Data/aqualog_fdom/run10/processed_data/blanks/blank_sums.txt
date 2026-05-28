@@ -1,0 +1,8 @@
+Group001Sample0001BEM.dat 6
+Group002Sample0001BEM.dat -3
+Group003Sample0001BEM.dat -1
+Group005Sample0001BEM.dat 3
+Group006Sample0001BEM.dat -9
+Group007Sample0001BEM.dat 2
+Group008Sample0001BEM.dat 4
+Group009Sample0001BEM.dat -2
