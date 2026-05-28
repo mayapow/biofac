@@ -64,6 +64,18 @@ run8 <- process_aqualog(
   sample_key_file = "SampleDataSheet.txt"
 )
 
+run9 <- process_aqualog(
+  data_directory = file.path(base_dir_data, "run9"),
+  run_name = "run9",
+  sample_key_file = "SampleDataSheet.txt"
+)
+
+run10 <- process_aqualog(
+  data_directory = file.path(base_dir_data, "run10"),
+  run_name = "run10",
+  sample_key_file = "SampleDataSheet.txt"
+)
+
 # re-run with custom org sheet if needed to fix blank assignments
 # uncomment only if needed
 
@@ -102,11 +114,25 @@ run5 <- process_aqualog(
   org_file = "processed_data/run5_sample_sheet_clean.csv"
 )
 
+run7 <- process_aqualog(
+  data_directory = file.path(base_dir_data, "run7"),
+  run_name = "run7",
+  sample_key_file = "SampleDataSheet.txt",
+  org_file = "processed_data/run7_sample_sheet_clean.csv"
+)
+
 run8 <- process_aqualog(
   data_directory = file.path(base_dir_data, "run8"),
   run_name = "run8",
   sample_key_file = "SampleDataSheet.txt",
   org_file = "processed_data/run8_sample_sheet_clean.csv"
+)
+
+run10 <- process_aqualog(
+  data_directory = file.path(base_dir_data, "run10"),
+  run_name = "run10",
+  sample_key_file = "SampleDataSheet.txt",
+  org_file = "processed_data/run10_sample_sheet_clean.csv"
 )
 
 # automatically grab all run folders
