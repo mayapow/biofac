@@ -1,0 +1,50 @@
+---
+title: "SurfaceArea_AC"
+output: html_document
+---
+##Load Libraries
+
+```{r}
+library(tidyverse)
+library(here)
+library(stringr)
+```
+##Read in Data
+
+```{r}
+SpeciesA_tf <- read_csv(here("Data/Photogrammetry/tf-data-v1.csv"))
+SpeciesA_t0 <- read_csv(here("Data/Photogrammetry/t0-data-v1.csv"))
+view(SpeciesA_t0)
+```
+
+##Wrangle Data
+
+```{r}
+SpeciesA_tf_clean <- SpeciesA_tf %>%
+  mutate(Measurement = if_else(is.na(volume_mm3), "SurfaceArea", "Volume")) %>% #Adding column for what type of measurement it is
+  mutate(Treatment = str_extract(model, "[^_]+$")) %>% #Adding column for the treatement group
+  drop_na(model) %>%  #Dropping the na rows from the model column
+  rename(SA_tf = surface_area_mm2) %>% #renaming the surface area column to add the timepoint 
+  rename(V_tf = volume_mm3) %>% #renaiming the surface area column to add the timepoint 
+    filter(model != "backup") %>%
+select(-chunk, -closed)
+
+SpeciesA_t0_clean <- SpeciesA_t0 %>%
+  mutate(Measurement = if_else(is.na(volume_mm3), "SurfaceArea", "Volume")) %>% #Adding column for what type of measurement it is
+  mutate(Treatment = str_extract(model, "[^_]+$")) %>% #Adding column for the treatement group
+  drop_na(model) %>%  #Dropping the na rows from the model column
+  filter(model != "backup") %>% #Remove the rows with backup models
+   rename(SA_t0 = surface_area_mm2) %>% #renaming the surface area column to add the timepoint 
+  rename(V_t0 = volume_mm3) %>% #renaiming the surface area column to add the timepoint
+  select(-chunk, -closed)
+
+JoinedAreaData <- left_join( SpeciesA_t0_clean,SpeciesA_tf_clean, by = join_by(model, Treatment, Measurement))
+```
+
+```{r}
+GrowthData <- JoinedAreaData %>%
+  mutate(DeltaSA = SA_tf - SA_t0) %>%
+  mutate(DeltaV = V_tf - V_t0)
+```
+
+
