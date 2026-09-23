@@ -9,6 +9,7 @@ library(tidyverse)
 library(here)
 library(stringr)
 ```
+
 ##Read in Data
 
 ```{r}
@@ -39,12 +40,121 @@ SpeciesA_t0_clean <- SpeciesA_t0 %>%
   select(-chunk, -closed)
 
 JoinedAreaData <- left_join( SpeciesA_t0_clean,SpeciesA_tf_clean, by = join_by(model, Treatment, Measurement))
+
+#Filter out models that do not have TF data
+JoinedAreaData <- JoinedAreaData %>%
+  filter(!model %in% c("A13_1_3SP","Copy of A13_1_3SP",
+"A14_1_3SP", "Copy of A14_1_3SP",
+"A15_1_3SP","Copy of A15_1_3SP",
+"A16_1_3SP", "Copy of A16_1_3SP",
+"A09_1_FAKE", "Copy of A09_1_FAKE",
+"A10_1_FAKE", "Copy of A10_1_FAKE",
+"A11_1_FAKE", "Copy of A11_1_FAKE",
+"A12_1_FAKE", "Copy of A12_1_FAKE",
+"A05_1_6SP", "Copy of A05_1_6SP",
+"A06_1_6SP", "Copy of A06_1_6SP",
+"A07_1_6SP","Copy of A07_1_6SP",
+"A08_1_6SP", "Copy of A08_1_6SP" )) %>% #Filtering out all models that do not have tf data
+    filter(!grepl("^b", model, ignore.case = TRUE)) %>% #filtering out all b models
+  filter(!grepl("^Copy of b", model, ignore.case = TRUE)) %>%
+  #Filtering out all copy of b models
+    mutate(FragID = str_extract(model, "[A-Za-z]\\d+")) %>%
+  relocate(FragID, .after = 1) %>% #Moving to different order of columns
+  relocate(Treatment, .after =2) %>%
+  relocate(Measurement, .after =3)
 ```
+
+Making growth data by looking at the difference between t_final and t-initial surface area and volume
 
 ```{r}
 GrowthData <- JoinedAreaData %>%
-  mutate(DeltaSA = SA_tf - SA_t0) %>%
-  mutate(DeltaV = V_tf - V_t0)
+  mutate(DeltaSA = (SA_tf - SA_t0)/100) %>% #Find the growth data and divide by 100 to change to cm2
+  mutate(DeltaV = (V_tf - V_t0)/1000) %>%#Divide by 100 to change to cm3
+  filter(DeltaSA > 0) %>% #Getting rid of negative values **Should check these models later
+  filter(DeltaV > 0) 
+  
+  
+
+
+GrowthData$model[is.na(GrowthData$DeltaSA)] #Listing which model names we are missing tf data for 
+
+GrowthData <- GrowthData %>% filter(!is.na(DeltaSA)) #filtering out the remaining models that do not have tf data **We need to double check this 
 ```
 
+Making a function to find standard error 
+
+```{r}
+
+se_fun <- function(x) {
+  n <- sum(!is.na(x))
+  if (n <= 1) return(NA_real_)
+  sd(x, na.rm = TRUE) / sqrt(n)
+}
+```
+
+
+Generate Summary Data for each treatment group
+
+```{r}
+GrowthSummary <- GrowthData %>%
+  group_by(Treatment) %>% #Group by treatment to take averages across treatment groups etc. 
+  summarise(
+    N_SA = sum(!is.na(DeltaSA)),
+    N_V = sum(!is.na(DeltaV)),
+    DeltaSA_avg = mean(DeltaSA), 
+    DeltaV_avg = mean(DeltaV), 
+    se_SA = se_fun(DeltaSA), 
+    se_V = se_fun(DeltaV))
+```
+
+Reorder the data based on mean values and combine it with our data set to plot it
+
+```{r}
+GrowthDataOrdered <- GrowthData %>% left_join(GrowthSummary, by = "Treatment") %>%
+  mutate(Treatment = fct_reorder(Treatment, DeltaSA_avg))
+```
+
+Plot the data
+We will make geom jitter plot with stat summary in it 
+
+```{r}
+SurfaceAreaPlot <- ggplot() + #Use ggplot to make the graphs
+  geom_jitter(data = GrowthDataOrdered, aes(x = Treatment, y = DeltaSA, color = FragID),  #Geom jitter with treatment on the x axis and change in surface area on the y axis in cm, we want each individual fragment to be colored
+              width = 0.15, alpha = 0.8) + #This is setting the size of points
+  # stat_summary(data = GrowthDataOrdered, aes(x = Treatment, y = DeltaSA)
+  geom_errorbar(data = GrowthSummary, aes(x = Treatment, ymin = DeltaSA_avg - se_SA, ymax = DeltaSA_avg + se_SA), #Making the error bars on the graph fromt eh summary stats that we made above
+                width = 0.2, linewidth = 0.6) + #Size of the error bars
+  geom_point(data = GrowthSummary, aes(x = Treatment, y = DeltaSA_avg), size = 2) + #This is the point of the average of the growth values
+  labs(y = expression("Change in Surface area cm"^2), #changing the y-axis title 
+       x = "Treatment Group") + #changing the x-axis title 
+  
+  theme_bw(base_size = 22) #Theme of the plot set to black and white and size of font to 22
+
+SurfaceAreaPlot
+
+ggsave(here("Output", "SurfaceAreaChange_Jitter.pdf"), SurfaceAreaPlot, h = 5, w = 10) #Save the graph into a folder, can ignore 
+
+```
+
+
+Now we can do the same for Volume
+
+```{r}
+VolumePlot <- ggplot() + #Use ggplot to make the graphs
+  geom_jitter(data = GrowthDataOrdered, aes(x = Treatment, y = DeltaV, color = FragID),  #Geom jitter with treatment on the x axis and change in volume on the y axis in cm, we want each individual fragment to be colored
+              width = 0.15, alpha = 0.8) + #This is setting the size of points
+  
+  geom_errorbar(data = GrowthSummary, aes(x = Treatment, ymin = DeltaV_avg - se_V, ymax = DeltaV_avg + se_V), #Making the error bars on the graph fromt eh summary stats that we made above
+                width = 0.2, linewidth = 0.6) + #Size of the error bars
+  geom_point(data = GrowthSummary, aes(x = Treatment, y = DeltaV_avg), size = 2) + #This is the point of the average of the growth values
+  labs(y = expression("Change in Volume cm"^3), #changing the y-axis title 
+       x = "Treatment Group") + #changing the x-axis title 
+  
+  theme_bw(base_size = 22) #Theme of the plot set to black and white and size of font to 22
+
+VolumePlot
+
+ggsave(here("Output", "VolumeChange_Jitter.pdf"), VolumePlot, h = 5, w = 10) #Save the graph into a folder, can ignore 
+
+```
 
