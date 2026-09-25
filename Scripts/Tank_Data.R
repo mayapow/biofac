@@ -25,12 +25,13 @@ td <- read.csv(here("Data/Tank_Data/tank_data_biofac.csv"))
 
 td <- td %>%
   filter(period == "experiment") %>%
+  #filter(date > ymd("2026-03-25")) %>%
+  mutate(tank = as.factor(tank)) %>% 
   mutate(date_time = paste(date,time)) %>%
   mutate(date_time = mdy_hm(date_time)) %>%
   mutate(date = mdy(date)) %>%
   mutate(tris_date = mdy(tris_date)) %>%
-  mutate(tank = as.factor(tank)) %>% 
-  #filter(date > ymd("2026-03-25")) %>%
+  #mutate(time = hm(time)) %>%
   filter(bad == "no") #%>%
   #drop_na(temp) %>%
   #filter(day_night == "day")
@@ -67,7 +68,7 @@ sump_data <- tank_data %>% filter(treatment == "sump") %>%
 temp_pre <- ggplot(tank_data, aes(x = date_time, y = temp, color = treatment, group = tank)) +
   geom_point(alpha = 0.5) +
   geom_line(alpha = 0.5) +
-  facet_wrap(day_night~., nrow = 2) +
+  facet_wrap(day_night~., nrow = 2, scales = "free") +
   theme_bw(base_size = 20) +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
@@ -117,6 +118,19 @@ sal_pre <- ggplot(tank_data, aes(x = date_time, y = sal, color = treatment, grou
 #   theme(axis.text.x = element_text(angle = 90)) +
 #   scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
 #   scale_x_datetime(date_labels = "%m-%d", date_breaks = "1 day")
+
+tank_data_ta <- tank_data %>%
+  filter(date > ymd("2026-04-01")) %>%
+  drop_na(TA)
+TA_pre <- ggplot(tank_data_ta, aes(x = date_time, y = TA, color = treatment, group = tank)) +
+  geom_point(alpha = 0.5) +
+  geom_line(alpha = 0.5) +
+  #facet_wrap(day_night~., nrow = 2, scales = "free") +
+  theme_bw(base_size = 20) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_color_manual(values = c("steelblue","purple","lightgray","darkgray","lightgreen","red", "black"))+
+  scale_x_datetime(date_labels = "%m-%d\n%H:%M", date_breaks = "3 hour")
+
 
 tank_plots <- ggarrange(temp_pre, pHT_pre, DO_pre, sal_pre, 
                         common.legend = T, nrow = 2, ncol = 2)
@@ -649,7 +663,7 @@ night <- tank_data %>%
 pHT_day_mod <- lm(pHT~treatment, data = day)
 Anova(pHT_day_mod)
 summary(pHT_day_mod)
-#check_model(DW.mod.spp)
+check_model(pHT_day_mod)
 
 pHT_day_emm <- emmeans::emmeans(pHT_day_mod, ~ treatment)
 pHT_day_pairs <- pairs(pHT_day_emm)
@@ -782,9 +796,15 @@ pHT_pairs
 
 #DO comparisons
 DO_mod <- lm(DO_dif~treatment, data = day_night)
+DO_rand <- lmer(DO_dif~treatment + (1| sump), data = day_night)
 Anova(DO_mod)
 summary(DO_mod)
-#check_model(DW.mod.spp)
+check_model(DO_mod)
+models<-list("Model with rand" = DO_rand,
+             "Model with no rand" = DO_mod)
+modelsummary(models)
+modelsummary(DO_mod, gof_map = c("nobs", "chisq", "p.value"))
+
 
 DO_emm <- emmeans::emmeans(DO_mod, ~ treatment)
 DO_pairs <- pairs(DO_emm)

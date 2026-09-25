@@ -280,6 +280,7 @@ basic_PI_plot <- RespoR_Normalized %>%
   geom_point()+
   geom_line()+
   facet_wrap(~species, scales = "free")
+basic_PI_plot
 ggsave(here("Output","PI","basic_PI_plot.pdf"), basic_PI_plot, h=4, w=8)
 
 ### run an nls model for PI curve and extract Ik for each species ###
@@ -313,9 +314,11 @@ mtext(expression(Rate*" ("*mu*"mol "*O[2]*" "*cm^-2*h^-1*")"),side=2,line=2,cex=
 #fit a model using a Nonlinear Least Squares regression of a non-rectangular hyperbola (Marshall & Biscoe, 1980)
 curve.nlslrc = nls(Pc ~ (1/(2*theta))*(AQY*PAR+Am-sqrt((AQY*PAR+Am)^2-4*AQY*theta*Am*PAR))-Rd,start=list(Am=(max(Pc)-min(Pc)),AQY=0.15,Rd=-min(Pc),theta=0.2))
 my.fit <- summary(curve.nlslrc) #summary of model fit
+summary(curve.nlslrc)$coef
 
 #draw the curve using the model fit
 pcom.curve.fitting <- curve((1/(2*summary(curve.nlslrc)$coef[4,1]))*(summary(curve.nlslrc)$coef[2,1]*x+summary(curve.nlslrc)$coef[1,1]-sqrt((summary(curve.nlslrc)$coef[2,1]*x+summary(curve.nlslrc)$coef[1,1])^2-4*summary(curve.nlslrc)$coef[2,1]*summary(curve.nlslrc)$coef[4,1]*summary(curve.nlslrc)$coef[1,1]*x))-summary(curve.nlslrc)$coef[3,1],lwd=2,col="blue",add=T)
+pcom.curve.fitting <- curve((1/(2*my.fit$coef[4,1]))*(my.fit$coef[2,1]*x+my.fit$coef[1,1]-sqrt((my.fit$coef[2,1]*x+my.fit$coef[1,1])^2-4*my.fit$coef[2,1]*my.fit$coef[4,1]*my.fit$coef[1,1]*x))-my.fit$coef[3,1],lwd=2,col="blue",add=T)
 
 #Amax (max gross photosytnthetic rate)
 Pmax.gross <- my.fit$parameters[1]
@@ -394,3 +397,9 @@ row.names(mcap.PI.Output) <- c("Pg.max","Pn.max","Rdark","alpha", "Ik", "Ic")
 # alpha    0.00709607
 # Ik     242.18784057
 # Ic      51.45884245
+
+###Get temperature data across all runs
+median(Respo.Data1$Temp) #
+mean(Respo.Data1$Temp) #
+max(Respo.Data1$Temp) #
+min(Respo.Data1$Temp) #

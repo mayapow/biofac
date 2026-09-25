@@ -68,12 +68,16 @@ Making growth data by looking at the difference between t_final and t-initial su
 
 ```{r}
 GrowthData <- JoinedAreaData %>%
-  mutate(DeltaSA = (SA_tf - SA_t0)/100) %>% #Find the growth data and divide by 100 to change to cm2
-  mutate(DeltaV = (V_tf - V_t0)/1000) %>%#Divide by 100 to change to cm3
+  mutate(SA_t0_cm2 = SA_t0/100) |> #convert to cm2
+  mutate(SA_tf_cm2 = SA_tf/100) |> 
+  mutate(V_t0_cm3 = V_t0/1000) |> #convert to cm3
+  mutate(V_tf_cm3 = V_tf/1000) |> 
+  mutate(DeltaSA = SA_tf_cm2 - SA_t0_cm2) %>% #Find the growth data 
+  mutate(DeltaV = V_tf_cm3 - V_t0_cm3) %>%
   filter(DeltaSA > 0) %>% #Getting rid of negative values **Should check these models later
-  filter(DeltaV > 0) 
-  
-  
+  filter(DeltaV > 0)  |> 
+  mutate(PctDeltaSA = ((SA_tf_cm2 - SA_t0_cm2)/SA_t0_cm2)*100) |> #pct change is final-initial/initial * 100
+  mutate(PctDeltaV = ((V_tf_cm3 - V_t0_cm3)/V_t0_cm3)*100)
 
 
 GrowthData$model[is.na(GrowthData$DeltaSA)] #Listing which model names we are missing tf data for 
@@ -105,6 +109,16 @@ GrowthSummary <- GrowthData %>%
     DeltaV_avg = mean(DeltaV), 
     se_SA = se_fun(DeltaSA), 
     se_V = se_fun(DeltaV))
+
+PctGrowthSummary <- GrowthData %>%
+  group_by(Treatment) %>% #Group by treatment to take averages across treatment groups etc. 
+  summarise(
+    N_PctSA = sum(!is.na(PctDeltaSA)),
+    N_PctV = sum(!is.na(PctDeltaV)),
+    PctDeltaSA_avg = mean(PctDeltaSA), 
+    PctDeltaV_avg = mean(PctDeltaV), 
+    se_PctSA = se_fun(PctDeltaSA), 
+    se_PctV = se_fun(PctDeltaV))
 ```
 
 Reorder the data based on mean values and combine it with our data set to plot it
@@ -112,6 +126,9 @@ Reorder the data based on mean values and combine it with our data set to plot i
 ```{r}
 GrowthDataOrdered <- GrowthData %>% left_join(GrowthSummary, by = "Treatment") %>%
   mutate(Treatment = fct_reorder(Treatment, DeltaSA_avg))
+
+PctGrowthDataOrdered <- GrowthData %>% left_join(PctGrowthSummary, by = "Treatment") %>%
+  mutate(Treatment = fct_reorder(Treatment, PctDeltaSA_avg))
 ```
 
 Plot the data
@@ -136,6 +153,24 @@ ggsave(here("Output", "SurfaceAreaChange_Jitter.pdf"), SurfaceAreaPlot, h = 5, w
 
 ```
 
+```{r}
+PctSurfaceAreaPlot <- ggplot() + #Use ggplot to make the graphs
+  geom_jitter(data = PctGrowthDataOrdered, aes(x = Treatment, y = PctDeltaSA, color = FragID),  #Geom jitter with treatment on the x axis and change in surface area on the y axis in cm, we want each individual fragment to be colored
+              width = 0.15, alpha = 0.8) + #This is setting the size of points
+  # stat_summary(data = GrowthDataOrdered, aes(x = Treatment, y = DeltaSA)
+  geom_errorbar(data = PctGrowthSummary, aes(x = Treatment, ymin = PctDeltaSA_avg - se_PctSA, ymax = PctDeltaSA_avg + se_PctSA), #Making the error bars on the graph fromt eh summary stats that we made above
+                width = 0.2, linewidth = 0.6) + #Size of the error bars
+  geom_point(data = PctGrowthSummary, aes(x = Treatment, y = PctDeltaSA_avg), size = 2) + #This is the point of the average of the growth values
+  labs(y = expression("Percent Change in Surface area cm"^2), #changing the y-axis title 
+       x = "Treatment Group") + #changing the x-axis title 
+  
+  theme_bw(base_size = 22) #Theme of the plot set to black and white and size of font to 22
+
+PctSurfaceAreaPlot
+
+ggsave(here("Output", "PctSurfaceAreaChange_Jitter.pdf"), PctSurfaceAreaPlot, h = 5, w = 10) #Save the graph into a folder
+```
+
 
 Now we can do the same for Volume
 
@@ -156,5 +191,58 @@ VolumePlot
 
 ggsave(here("Output", "VolumeChange_Jitter.pdf"), VolumePlot, h = 5, w = 10) #Save the graph into a folder, can ignore 
 
+```
+
+
+```{r}
+PctVolumePlot <- ggplot() + #Use ggplot to make the graphs
+  geom_jitter(data = PctGrowthDataOrdered, aes(x = Treatment, y = PctDeltaV, color = FragID),  #Geom jitter with treatment on the x axis and change in surface area on the y axis in cm, we want each individual fragment to be colored
+              width = 0.15, alpha = 0.8) + #This is setting the size of points
+  # stat_summary(data = GrowthDataOrdered, aes(x = Treatment, y = DeltaV)
+  geom_errorbar(data = PctGrowthSummary, aes(x = Treatment, ymin = PctDeltaV_avg - se_PctV, ymax = PctDeltaV_avg + se_PctV), #Making the error bars on the graph fromt eh summary stats that we made above
+                width = 0.2, linewidth = 0.6) + #Size of the error bars
+  geom_point(data = PctGrowthSummary, aes(x = Treatment, y = PctDeltaV_avg), size = 2) + #This is the point of the average of the growth values
+  labs(y = expression("Percent Change in Volume cm"^3), #changing the y-axis title 
+       x = "Treatment Group") + #changing the x-axis title 
+  
+  theme_bw(base_size = 22) #Theme of the plot set to black and white and size of font to 22
+
+PctVolumePlot
+
+ggsave(here("Output", "PctVolumeChange_Jitter.pdf"), PctVolumePlot, h = 5, w = 10) #Save the graph into a folder
+```
+
+
+```{r}
+sa_mod <- lm(DeltaSA ~ Treatment, data = GrowthData)
+vol_mod <- lm(DeltaV ~ Treatment, data = GrowthData)
+leveneTest(sa_mod)
+leveneTest(vol_mod)
+check_model(sa_mod)
+check_model(vol_mod)
+
+anova(sa_mod) #0.0465 *
+anova(vol_mod) #0.06546 .
+
+sa_emm <- emmeans::emmeans(sa_mod, ~Treatment)
+pairs(sa_emm)
+
+ # contrast    estimate    SE df t.ratio p.value
+ # MONO - FAKE   -0.892 0.638 44  -1.398  0.5071
+ # MONO - 3SP    -1.502 0.658 44  -2.284  0.1173
+ # MONO - 6SP    -1.716 0.681 44  -2.521  0.0705 #almost
+ # FAKE - 3SP    -0.610 0.728 44  -0.837  0.8366
+ # FAKE - 6SP    -0.824 0.749 44  -1.099  0.6920
+ # 3SP - 6SP     -0.214 0.766 44  -0.279  0.9923
+
+pctsa_mod <- lm(PctDeltaSA ~ Treatment, data = GrowthData)
+pctvol_mod <- lm(PctDeltaV ~ Treatment, data = GrowthData)
+leveneTest(pctsa_mod)
+leveneTest(pctvol_mod)
+check_model(pctsa_mod)
+check_model(pctvol_mod)
+
+anova(pctsa_mod) #0.1219
+anova(pctvol_mod) #0.1634
 ```
 
